@@ -27,7 +27,7 @@ export class OgiLambda extends Construct {
       handler: 'index.handler',
       vpc: props.vpc,
       vpcSubnets: {
-        subnetType: props.subnetType || ec2.SubnetType.PUBLIC,
+        subnetType: props.subnetType || ec2.SubnetType.PRIVATE_WITH_EGRESS,
       },
       memorySize: props.memorySize || 128,
       timeout: props.timeout || cdk.Duration.minutes(1),
