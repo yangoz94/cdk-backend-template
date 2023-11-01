@@ -36,6 +36,9 @@ jobs:
           npm install -g aws-cdk
           npm ci
           npm run build
+      - name: Bootstrap CDK
+        run: |
+          cdk bootstrap aws://${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.AWS_REGION }}
       - name: Synthesize and deploy CDK app
         run: |
           cdk synth
@@ -70,6 +73,9 @@ jobs:
           npm install -g aws-cdk
           npm ci
           npm run build
+      - name: Bootstrap CDK
+        run: |
+          cdk bootstrap aws://${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.AWS_REGION }}          
       - name: Synthesize and deploy CDK app
         run: |
           cdk synth
