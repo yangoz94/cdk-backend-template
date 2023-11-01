@@ -25,6 +25,7 @@ export class OgiLambda extends Construct {
       code: lambda.Code.fromAsset('src/lambdas/hello-world'),
       handler: 'index.handler',
       vpc: props.vpc,
+      allowPublicSubnet: true,
       memorySize: props.memorySize || 128,
       timeout: props.timeout || cdk.Duration.minutes(1),
       ephemeralStorageSize: props.epheramalStorageSize || cdk.Size.mebibytes(512),
