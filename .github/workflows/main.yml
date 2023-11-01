@@ -1,4 +1,4 @@
-name: ${{ secrets.APP_NAME }} CDK Pipeline
+name: CDK Pipeline
 
 on:
   push:
