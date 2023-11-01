@@ -22,8 +22,8 @@ export class OgiLambda extends Construct {
     new lambda.Function(this, `${props.appName}-${props.lambdaName}`, {
       functionName: `${props.appName}-${props.lambdaName}`,
       runtime: lambda.Runtime.NODEJS_18_X,
-      code: lambda.Code.fromAsset('lambda'),
-      handler: `../src/lambdas/${props.lambdaName}/index.handler`,
+      code: lambda.Code.fromAsset('src/lambdas/hello-world'),
+      handler: 'index.handler',
       vpc: props.vpc,
       vpcSubnets: {
         subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
@@ -35,7 +35,7 @@ export class OgiLambda extends Construct {
         AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       },
       // Additional configurations:
-      reservedConcurrentExecutions: 100, // Limit the number of concurrent executions
+      reservedConcurrentExecutions: 20, // Limit the number of concurrent executions
       logRetention: RetentionDays.ONE_WEEK, // Retain logs for 7 days
       tracing: lambda.Tracing.ACTIVE, // Enable X-Ray tracing
     });
