@@ -8,7 +8,7 @@ new CdkBackendStack(app, 'CdkBackendStack', {
   appName: 'cdk-backend',
   qualifier: `${process.env.ENVIRONMENT}`,
   env: {
-    account: process.env.AWS_ACCOUNT_ID,
-    region: process.env.AWS_REGION,
+    account: process.env.CDK_DEFAULT_ACCOUNT || "928085612796",
+    region: process.env.CDK_DEFAULT_REGION || "us-east-1",
   },
 });
