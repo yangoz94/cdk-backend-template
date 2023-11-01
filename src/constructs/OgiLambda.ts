@@ -23,7 +23,7 @@ export class OgiLambda extends Construct {
       functionName: `${props.appName}-${props.lambdaName}`,
       runtime: lambda.Runtime.NODEJS_18_X,
       code: lambda.Code.fromAsset('lambda'),
-      handler: `../src/lambdas/${props.appName}-${props.lambdaName}/index.handler`,
+      handler: `../src/lambdas/${props.lambdaName}/index.handler`,
       vpc: props.vpc,
       vpcSubnets: {
         subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
