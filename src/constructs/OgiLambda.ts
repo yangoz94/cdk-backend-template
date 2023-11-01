@@ -14,7 +14,6 @@ export interface OgiLambdaProps {
     reservedConcurrentExecutions?: number;
     logRetention?: RetentionDays;
     tracing?: lambda.Tracing;
-    subnetType?: ec2.SubnetType;
 }
 export class OgiLambda extends Construct {
   constructor(scope: Construct, props: OgiLambdaProps) {
@@ -26,9 +25,6 @@ export class OgiLambda extends Construct {
       code: lambda.Code.fromAsset('src/lambdas/hello-world'),
       handler: 'index.handler',
       vpc: props.vpc,
-      vpcSubnets: {
-        subnetType: props.subnetType || ec2.SubnetType.PRIVATE_WITH_EGRESS,
-      },
       memorySize: props.memorySize || 128,
       timeout: props.timeout || cdk.Duration.minutes(1),
       ephemeralStorageSize: props.epheramalStorageSize || cdk.Size.mebibytes(512),
