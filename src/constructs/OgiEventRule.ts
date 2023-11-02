@@ -22,6 +22,7 @@ export class OgiEventRule extends Construct {
       eventPattern: props.eventPattern,
       schedule: props.schedule,
       targets: [new targets.LambdaFunction(props.lambdaTarget)],
+      // Do not set the eventBus property for scheduled rules
     });
   }
 }
