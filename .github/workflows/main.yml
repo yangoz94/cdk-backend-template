@@ -49,8 +49,8 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          CDK_DEFAULT_ACCOUNT: ${{ secrets.AWS_ACCOUNT_ID }} // for boostrap convenience only
-          CDK_DEFAULT_REGION: ${{ secrets.AWS_REGION }} // for boostrap convenience only
+          CDK_DEFAULT_ACCOUNT: ${{ secrets.AWS_ACCOUNT_ID }} // for bootstrap convenience only
+          CDK_DEFAULT_REGION: ${{ secrets.AWS_REGION }} // for bootstrap convenience only
           ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
 
   deploy_main:

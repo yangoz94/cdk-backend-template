@@ -39,5 +39,8 @@ export class CdkBackendStack extends cdk.Stack {
         state: ['SUCCEEDED'],
       }
     });
+
+    //add permissions
+    helloworldLambda.addPermissions(['events']);
   }
 }
