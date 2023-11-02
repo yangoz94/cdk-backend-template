@@ -17,7 +17,6 @@ export class OgiEventBus extends Construct {
 
     this.eventBus = new events.EventBus(this, `${appName}-${props.eventBusName}`, {
       eventBusName: `${appName}-${props.eventBusName}`,
-      eventSourceName: `${appName}-event-source`,
     });
   }
 

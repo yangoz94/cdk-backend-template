@@ -21,7 +21,6 @@ export class CdkBackendStack extends cdk.Stack {
     });
     // Lambda
     const helloworldLambda = new OgiLambda(this, {
-      appName: appName,
       lambdaName: 'hello-world',
       vpc: this.vpc,
     });

@@ -5,9 +5,10 @@ import { Construct } from 'constructs';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 
 export interface OgiLambdaProps {
-    appName: string;
     lambdaName: string;
     vpc : ec2.IVpc;
+    handler?: string;
+    codeDirectory?: string;
     memorySize?: number;
     timeout?: cdk.Duration;
     epheramalStorageSize?: cdk.Size;
@@ -19,13 +20,14 @@ export class OgiLambda extends Construct {
   public readonly lambdaFunction: lambda.Function;
   
   constructor(scope: Construct, props: OgiLambdaProps) {
-    super(scope, `${props.appName}-${props.lambdaName}`);
+    const appName = process.env.APP_NAME as string;
+    super(scope, `${appName}-${props.lambdaName}`);
 
-    new lambda.Function(this, `${props.appName}-${props.lambdaName}`, {
-      functionName: `${props.appName}-${props.lambdaName}`,
+    this.lambdaFunction = new lambda.Function(this, `${appName}-${props.lambdaName}`, {
+      functionName: `${appName}-${props.lambdaName}`,
       runtime: lambda.Runtime.NODEJS_18_X,
-      code: lambda.Code.fromAsset('src/lambdas/hello-world'),
-      handler: 'index.handler',
+      code: lambda.Code.fromAsset(props.codeDirectory || `src/lambdas/${props.lambdaName}`),
+      handler: props.handler || 'index.handler',
       vpc: props.vpc,
       allowPublicSubnet: true,
       memorySize: props.memorySize || 128,
