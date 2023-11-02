@@ -24,11 +24,9 @@ export class OgiEventBus extends Construct {
     const appName = process.env.APP_NAME;
     new events.Rule(this, `${appName}-${props.ruleName}`, {
       eventBus: this.eventBus,
-      eventPattern: {
-        source: props.source, 
-        detailType: props.detailType, 
-      },
+      eventPattern: props.eventPattern,
       targets: [new targets.LambdaFunction(props.lambdaTarget)],
+      schedule: props.schedule,
     });
   }
 }

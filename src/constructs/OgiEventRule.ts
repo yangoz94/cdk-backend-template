@@ -6,24 +6,22 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 export interface OgiEventRuleProps {
   ruleName: string;
   lambdaTarget: lambda.IFunction;
-  source?: string[]; 
-  detailType?: string[]; 
-  detail?: { [key: string]: any };
+  eventPattern?: events.EventPattern;
   schedule?: events.Schedule;
 }
-
 export class OgiEventRule extends Construct {
   constructor(scope: Construct, props: OgiEventRuleProps) {
     const appName = process.env.APP_NAME;
     super(scope, `${appName}-${props.ruleName}`);
 
+    if (!props.eventPattern && !props.schedule) {
+      throw new Error('Either eventPattern or schedule must be defined');
+    }
+
     new events.Rule(this, `${appName}-${props.ruleName}`, {
-      eventPattern: {
-        source: props.source, 
-        detailType: props.detailType, 
-      },
+      eventPattern: props.eventPattern,
+      schedule: props.schedule,
       targets: [new targets.LambdaFunction(props.lambdaTarget)],
-      schedule: props.schedule ,
     });
   }
 }
