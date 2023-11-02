@@ -5,11 +5,11 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 export interface OgiEventRuleProps {
   ruleName: string;
-  eventBus: events.IEventBus;
   lambdaTarget: lambda.IFunction;
-  source: string[]; 
-  detailType: string[]; 
+  source?: string[]; 
+  detailType?: string[]; 
   detail?: { [key: string]: any };
+  schedule?: events.Schedule;
 }
 
 export class OgiEventRule extends Construct {
@@ -18,12 +18,12 @@ export class OgiEventRule extends Construct {
     super(scope, `${appName}-${props.ruleName}`);
 
     new events.Rule(this, `${appName}-${props.ruleName}`, {
-      eventBus: props.eventBus,
       eventPattern: {
         source: props.source, 
         detailType: props.detailType, 
       },
       targets: [new targets.LambdaFunction(props.lambdaTarget)],
+      schedule: props.schedule ,
     });
   }
 }

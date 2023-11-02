@@ -5,7 +5,7 @@ import { Construct } from 'constructs';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam'; // Import the PolicyStatement class
 
-export interface OgiLambdaProps {
+export interface OgiLambdaProps{
     lambdaName: string;
     vpc : ec2.IVpc;
     handler?: string;
@@ -30,7 +30,6 @@ export class OgiLambda extends Construct {
     ecs: ['ecs:*'], // Fargate (Fargate is a launch type for ECS)
     sqs: ['sqs:*'], // SQS
   };
-  
   
   constructor(scope: Construct, props: OgiLambdaProps) {
     const appName = process.env.APP_NAME as string;

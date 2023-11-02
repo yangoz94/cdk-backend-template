@@ -3,6 +3,7 @@ import { IVpc } from "aws-cdk-lib/aws-ec2";
 import { Construct } from 'constructs';
 import { OgiLambda, OgiLambdaProps } from '../src/constructs/OgiLambda';
 import { OgiEventBus } from '../src/constructs/OgiEventBus';
+import * as events from 'aws-cdk-lib/aws-events';
 
 export interface CdkBackendStackProps extends cdk.StackProps {
   qualifier: string; // will be appended to the stack resources (10 characters max)
@@ -30,16 +31,11 @@ export class CdkBackendStack extends cdk.Stack {
     });
     //Event rule
     myEventBus.addRule({
-      ruleName: 'deployment-complete-rule', // tests permissions
-      eventBus: myEventBus.eventBus,
+      ruleName: 'hello-world-lambda-scheduled-invocation',
       lambdaTarget: helloworldLambda.lambdaFunction,
-      source: ['aws.codedeploy'],
-      detailType: ['CodeDeploy Deployment State-change Notification'],
-      detail: {
-        state: ['SUCCEEDED'],
-      }
+      schedule: events.Schedule.rate(cdk.Duration.minutes(5)), // Invoke every 5 minutes
     });
-
+    
     //add permissions
     helloworldLambda.addPermissions(['events']);
   }
