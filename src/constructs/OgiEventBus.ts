@@ -23,6 +23,7 @@ export class OgiEventBus extends Construct {
   public addRule(props: OgiEventRuleProps) {
     const appName = process.env.APP_NAME;
     new events.Rule(this, `${appName}-${props.ruleName}`, {
+      ruleName: `${appName}-${props.ruleName}`,
       eventBus: props.schedule ? undefined : this.eventBus, // Only set eventBus if schedule is not provided
       eventPattern: props.eventPattern,
       targets: [new targets.LambdaFunction(props.lambdaTarget)],

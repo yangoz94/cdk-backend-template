@@ -33,7 +33,7 @@ export class CdkBackendStack extends cdk.Stack {
     myEventBus.addRule({
       ruleName: 'hello-world-lambda-scheduled-invocation',
       lambdaTarget: helloworldLambda.lambdaFunction,
-      schedule: events.Schedule.rate(cdk.Duration.minutes(5)), // Invoke every 5 minutes
+      schedule: events.Schedule.rate(cdk.Duration.days(30)), // Invoke every 5 minutes
     });
     
     //add permissions
