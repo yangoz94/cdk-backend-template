@@ -16,6 +16,8 @@ export interface OgiLambdaProps {
     tracing?: lambda.Tracing;
 }
 export class OgiLambda extends Construct {
+  public readonly lambdaFunction: lambda.Function;
+  
   constructor(scope: Construct, props: OgiLambdaProps) {
     super(scope, `${props.appName}-${props.lambdaName}`);
 
@@ -33,9 +35,9 @@ export class OgiLambda extends Construct {
         AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       },
       // Additional configurations:
-      reservedConcurrentExecutions: 20, // Limit the number of concurrent executions
-      logRetention: RetentionDays.ONE_WEEK, // Retain logs for 7 days
-      tracing: lambda.Tracing.ACTIVE, // Enable X-Ray tracing
+      reservedConcurrentExecutions: props.reservedConcurrentExecutions || 20, // Limit the number of concurrent executions
+      logRetention: props.logRetention || RetentionDays.ONE_WEEK, // Retain logs for 7 days
+      tracing: props.tracing || lambda.Tracing.ACTIVE, // Enable X-Ray tracing
     });
   }
 }
