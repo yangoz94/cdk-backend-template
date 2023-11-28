@@ -59,7 +59,7 @@ export class CdkBackendStack extends cdk.Stack {
 
     /**********SCHEDULED RULE OPTION 2**********/ 
     const ruleOption2 = new OgiScheduledRule(this, {
-      ruleName: `${appName}-ScheduledRule2`,
+      ruleName: `ScheduledRule2`,
       lambdaTarget: sampleLambda
       .lambdaFunction,
       scheduleConfig: {
