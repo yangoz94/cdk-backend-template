@@ -24,9 +24,10 @@ export class CdkBackendStack extends cdk.Stack {
 
     /**********LAMBDA**********/ 
     const helloworldLambda = new OgiLambda(this, 'hello-world', {
-      lambdaName: 'hello-world',
+      lambdaName: `${appName}-hello-world`,
       vpc: this.vpc,
-      permissions: []
+      permissions: ["dynamodb"],
+      allowPublicSubnet: true,
     });
   
     /**********EVENT BUS**********/ 
