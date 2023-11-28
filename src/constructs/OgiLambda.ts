@@ -13,7 +13,7 @@ export interface OgiLambdaProps extends Omit<lambda.FunctionProps, 'runtime' | '
   permissions?: Permission[];
   runtime?: lambda.Runtime;
   handler?: string;
-  code?: lambda.Code;
+  code?: string;
 }
 
 export class OgiLambda extends Construct {
@@ -31,15 +31,16 @@ export class OgiLambda extends Construct {
   };
 
   constructor(scope: Construct, id: string, props: OgiLambdaProps) {
+    const appName = process.env.APP_NAME as string;
     super(scope, id);
 
     this.lambdaFunction = new lambda.Function(this, `${props.lambdaName}`, {
       ...props,
-      functionName: props.lambdaName,
+      functionName: `${appName}-${props.lambdaName}`,
       vpc: props.vpc,
       runtime: props.runtime || lambda.Runtime.NODEJS_18_X,
       handler: props.handler || "index.handler",
-      code: props.code || lambda.Code.fromAsset(path.join(__dirname, `../lambdas/${props.lambdaName}`)),
+      code:lambda.Code.fromAsset( props.code || `src/lambdas/${props.lambdaName}`),
     });
 
     if (props.permissions) {
