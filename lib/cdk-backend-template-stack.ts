@@ -23,8 +23,8 @@ export class CdkBackendStack extends cdk.Stack {
     });
 
     /**********LAMBDA**********/ 
-    const helloworldLambda = new OgiLambda(this, 'MyLambda', {
-      lambdaName: 'my-lambda-function',
+    const helloworldLambda = new OgiLambda(this, 'hello-world', {
+      lambdaName: 'hello-world',
       vpc: this.vpc,
       permissions: []
     });
@@ -36,7 +36,7 @@ export class CdkBackendStack extends cdk.Stack {
     
     /**********EVENT RULE**********/ 
     myEventBus.addRule({
-      ruleName: "hello-world-lambda-event-invocation",
+      ruleName: `${appName}-EventRule`,
       lambdaTarget: helloworldLambda.lambdaFunction,
       eventPattern: {
         source: ["dynamodb"],
@@ -46,7 +46,7 @@ export class CdkBackendStack extends cdk.Stack {
     
     /**********SCHEDULED RULE OPTION 1**********/ 
     const ruleOption1 = new OgiScheduledRule(this, {
-      ruleName: 'MyRule1',
+      ruleName: `${appName}-ScheduledRule1`,
       lambdaTarget: helloworldLambda.lambdaFunction,
       scheduleConfig: {
         at: '06:30' // UTC 
@@ -55,7 +55,7 @@ export class CdkBackendStack extends cdk.Stack {
 
     /**********SCHEDULED RULE OPTION 2**********/ 
     const ruleOption2 = new OgiScheduledRule(this, {
-      ruleName: 'MyRule2',
+      ruleName: `${appName}-ScheduledRule2`,
       lambdaTarget: helloworldLambda.lambdaFunction,
       scheduleConfig: {
         every: 7,

@@ -16,7 +16,6 @@ export interface OgiLambdaProps extends Omit<lambda.FunctionProps, 'runtime' | '
   code?: lambda.Code;
 }
 
-
 export class OgiLambda extends Construct {
   public readonly lambdaFunction: lambda.Function;
 
@@ -40,7 +39,7 @@ export class OgiLambda extends Construct {
       vpc: props.vpc,
       runtime: props.runtime || lambda.Runtime.NODEJS_18_X,
       handler: props.handler || "index.handler",
-      code: props.code || lambda.Code.fromAsset(path.join(__dirname, '/../src/lambdas', props.lambdaName)),
+      code: props.code || lambda.Code.fromAsset(path.join(__dirname, `../lambdas/${props.lambdaName}`)),
     });
 
     if (props.permissions) {
