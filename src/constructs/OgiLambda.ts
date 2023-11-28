@@ -30,7 +30,7 @@ export class OgiLambda extends Construct {
     sqs: ["sqs:*"], // SQS
   };
 
-  constructor(scope: Construct, id: string, props: OgiLambdaProps) {
+  constructor(scope: Construct, id: string, props: OgiLambdaProps, ) {
     const appName = process.env.APP_NAME as string;
     super(scope, id);
 
@@ -40,7 +40,7 @@ export class OgiLambda extends Construct {
       vpc: props.vpc,
       runtime: props.runtime || lambda.Runtime.NODEJS_18_X,
       handler: props.handler || "index.handler",
-      code:lambda.Code.fromAsset( props.code || `src/lambdas/${props.lambdaName}`),
+      code:lambda.Code.fromAsset( props.code || `src/lambdas/${props.lambdaName}`)
     });
 
     if (props.permissions) {
