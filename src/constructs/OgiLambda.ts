@@ -52,7 +52,7 @@ export class OgiLambda extends Construct {
       vpc: props.vpc,
       runtime: props.runtime || lambda.Runtime.NODEJS_18_X,
       handler: props.handler || "index.handler",
-      entry: path.join(__dirname, `../src/lambdas/${props.lambdaName}/index.ts`),
+      entry: path.join(__dirname, `../lambdas/${props.lambdaName}/index.ts`),
       bundling: {
         sourceMap: false,
         nodeModules: props.nodeModules || [],

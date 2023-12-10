@@ -29,7 +29,6 @@
     "cdk.out"
   ],
   "moduleResolution": "node",
-  "baseUrl": ".",
   "outDir": "dist",
   "typeRoots": ["./node_modules/@types"],
 }
