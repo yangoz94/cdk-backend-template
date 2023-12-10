@@ -2,46 +2,68 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import path = require('path');
 
-
-type Permission = 's3' | 'dynamodb' | 'rds' | 'apigateway' | 'events' | 'ec2' | 'ecs' | 'sqs';
+export enum Permission {
+  S3 = 's3',
+  DynamoDB = 'dynamodb',
+  RDS = 'rds',
+  APIGateway = 'apigateway',
+  Events = 'events',
+  EC2 = 'ec2',
+  ECS = 'ecs',
+  SQS = 'sqs'
+}
 
 export interface OgiLambdaProps extends Omit<lambda.FunctionProps, 'runtime' | 'handler' | 'code'> {
   lambdaName: string;
   vpc: ec2.IVpc;
-  permissions?: Permission[];
+  permissions?: string[];
   runtime?: lambda.Runtime;
   handler?: string;
-  code?: string;
+  allowPublicSubnet?: boolean;
+  nodeModules?: string[];
+  allowApiGatewayInvoke?: boolean; // New property
 }
 
 export class OgiLambda extends Construct {
   public readonly lambdaFunction: lambda.Function;
 
-  private permissionsMap: { [key: string]: string[] } = {
-    s3: ["s3:*"], // S3
-    dynamodb: ["dynamodb:*"], // DynamoDB
-    rds: ["rds:*"], // RDS including Aurora
-    apigateway: ["execute-api:*"], // API Gateway
-    events: ["events:*"], // EventBridge
-    ec2: ["ec2:*"], // EC2
-    ecs: ["ecs:*"], // Fargate (Fargate is a launch type for ECS)
-    sqs: ["sqs:*"], // SQS
+  private permissionsMap: { [key in Permission]: string[] } = {
+    [Permission.S3]: ["s3:*"], // S3
+    [Permission.DynamoDB]: ["dynamodb:*"], // DynamoDB
+    [Permission.RDS]: ["rds:*"], // RDS including Aurora
+    [Permission.APIGateway]: ["execute-api:*"], // API Gateway
+    [Permission.Events]: ["events:*"], // EventBridge
+    [Permission.EC2]: ["ec2:*"], // EC2
+    [Permission.ECS]: ["ecs:*"], // Fargate (Fargate is a launch type for ECwS)
+    [Permission.SQS]: ["sqs:*"], // SQS
   };
 
-  constructor(scope: Construct, id: string, props: OgiLambdaProps, ) {
+  constructor(scope: Construct, props: OgiLambdaProps) {
     const appName = process.env.APP_NAME as string;
-    super(scope, id);
+    super(scope, props.lambdaName);
 
-    this.lambdaFunction = new lambda.Function(this, `${props.lambdaName}`, {
+    this.lambdaFunction = new nodejs.NodejsFunction(this, props.lambdaName, {
       ...props,
       functionName: `${appName}-${props.lambdaName}`,
       vpc: props.vpc,
       runtime: props.runtime || lambda.Runtime.NODEJS_18_X,
       handler: props.handler || "index.handler",
-      code:lambda.Code.fromAsset( props.code || `src/lambdas/${props.lambdaName}`)
+      entry: path.join(__dirname, `../src/lambdas/${props.lambdaName}/index.ts`),
+      bundling: {
+        nodeModules: props.nodeModules
+      },
+      vpcSubnets: props.allowPublicSubnet ? { subnetType: ec2.SubnetType.PUBLIC } : { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
     });
+
+    // Add permission for API Gateway to invoke this Lambda function by default
+    if (props.allowApiGatewayInvoke !== false) { // If not explicitly set to false
+      this.lambdaFunction.addPermission('ApiGatewayInvoke', {
+        principal: new iam.ServicePrincipal('apigateway.amazonaws.com'),
+      });
+    }
 
     if (props.permissions) {
       this.addPermissions(props.permissions);
@@ -50,14 +72,16 @@ export class OgiLambda extends Construct {
 
   public addPermissions(services: string[]) {
     for (const service of services) {
-      const actions = this.permissionsMap[service];
-      if (actions) {
+      const permission = this.permissionsMap[service as Permission];
+      if (permission) {
         this.lambdaFunction.addToRolePolicy(
           new iam.PolicyStatement({
-            actions,
+            actions: permission,
             resources: ["*"],
           })
         );
+      } else {
+        console.error(`Invalid permission: ${service}`);
       }
     }
   }
