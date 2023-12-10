@@ -19,17 +19,17 @@ export class CdkBackendStack extends cdk.Stack {
     this.templateOptions.description = `(${appName}) - ${props?.qualifier} - ${this.templateOptions.description}`;
 
     /**********VPC LOOKUP OR CREATION**********/
-    const existingVpc = cdk.aws_ec2.Vpc.fromLookup(this, `${appName}-vpc`, {
-      vpcName: `${appName}-vpc`, // Look up the VPC by name
-    });
-
-    this.vpc =
-      existingVpc ||
-      new OgiVpc(this, {
+    try {
+      this.vpc = cdk.aws_ec2.Vpc.fromLookup(this, `${appName}-vpc`, {
+        vpcName: `${appName}-vpc`, // Look up the VPC by name
+      });
+    } catch (error) {
+      this.vpc = new OgiVpc(this, {
         appName: appName,
         vpcEndpoints: ["dynamodb", "s3"], // Add VPC endpoints for DynamoDB and S3 in the VPC
         privateSubnetType: cdk.aws_ec2.SubnetType.PRIVATE_ISOLATED,
       }).vpc;
+    }
 
     /**********LAMBDA**********/
     const helloWorldLambda = new OgiLambda(this, {
