@@ -53,6 +53,7 @@ export class OgiLambda extends Construct {
       runtime: props.runtime || lambda.Runtime.NODEJS_18_X,
       handler: props.handler || "index.handler",
       entry: path.join(__dirname, `../lambdas/${props.lambdaName}/index.ts`),
+      code: lambda.Code.fromAsset(path.join(__dirname, `../lambdas/${props.lambdaName}`)),
       bundling: {
         sourceMap: false,
         nodeModules: props.nodeModules || [],

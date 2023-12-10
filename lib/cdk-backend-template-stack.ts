@@ -38,7 +38,7 @@ export class CdkBackendStack extends cdk.Stack {
     });
 
     const githubLambda = new OgiLambda(this, {
-      lambdaName: "github",
+      lambdaName: "github-sample",
       vpc: this.vpc,
       permissions: ["dynamodb"],
       nodeModules: ["axios"],
