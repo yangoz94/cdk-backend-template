@@ -18,17 +18,22 @@ export class CdkBackendStack extends cdk.Stack {
     super(scope, id, props);
     this.templateOptions.description = `(${props.appName}) - ${props?.qualifier} - ${this.templateOptions.description}`;
 
-    /**********VPC LOOKUP OR CREATION**********/
-    try {
-      this.vpc = cdk.aws_ec2.Vpc.fromLookup(this, `${props.appName}-vpc`, {
-        vpcName: `${props.appName}-vpc`, // Look up the VPC by name
-      });
-    } catch (error) {
+    /*******VPC LOOKUP OR CREATION*******/
+    const vpc = cdk.aws_ec2.Vpc.fromLookup(this, `${props.appName}-vpc`, {
+      vpcName: `${props.appName}-vpc`, // Look up the VPC by name
+    });
+
+    // If VPC is not found in lookup, this.vpc will be undefined.
+    // In this case, create a new VPC.
+
+    if (typeof vpc === "undefined") {
       this.vpc = new OgiVpc(this, {
         appName: props.appName,
         vpcEndpoints: ["dynamodb", "s3"], // Add VPC endpoints for DynamoDB and S3 in the VPC
         privateSubnetType: cdk.aws_ec2.SubnetType.PRIVATE_ISOLATED,
       }).vpc;
+    } else {
+      this.vpc = vpc;
     }
 
     /**********LAMBDA**********/
@@ -48,11 +53,14 @@ export class CdkBackendStack extends cdk.Stack {
     const apiGateway = new OgiApiGateway(this, {
       apiGatewayName: `${props.appName}-api-gateway`,
       endpoints: [
-        { httpMethod: 'GET', lambdaFunction: githubLambda, resourcePath: 'github' },
+        {
+          httpMethod: "GET",
+          lambdaFunction: githubLambda,
+          resourcePath: "github",
+        },
         // TODO: Add more endpoints here if needed
       ],
     });
-    
 
     /**********EVENT BUS**********/
     const myEventBus = new OgiEventBus(this, {
