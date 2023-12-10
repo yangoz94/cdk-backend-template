@@ -22,10 +22,11 @@ export interface OgiLambdaProps extends Omit<lambda.FunctionProps, 'runtime' | '
   permissions?: string[];
   runtime?: lambda.Runtime;
   handler?: string;
-  allowPublicSubnet?: boolean;
   nodeModules?: string[];
   externalModules?: string[];
-  allowApiGatewayInvoke?: boolean; // New property
+  allowApiGatewayInvoke?: boolean;
+  vpcSubnets: ec2.SubnetSelection
+  appName: string;
 }
 
 export class OgiLambda extends Construct {
@@ -43,13 +44,13 @@ export class OgiLambda extends Construct {
   };
 
   constructor(scope: Construct, props: OgiLambdaProps) {
-    const appName = process.env.APP_NAME as string;
     super(scope, props.lambdaName);
 
     this.lambdaFunction = new nodejs.NodejsFunction(this, props.lambdaName, {
       ...props,
-      functionName: `${appName}-${props.lambdaName}`,
+      functionName: `${props.appName}-${props.lambdaName}`,
       vpc: props.vpc,
+      vpcSubnets: props.vpcSubnets,
       runtime: props.runtime || lambda.Runtime.NODEJS_18_X,
       handler: props.handler || "index.handler",
       entry: path.join(__dirname, `../lambdas/${props.lambdaName}/index.ts`),
@@ -58,7 +59,7 @@ export class OgiLambda extends Construct {
         nodeModules: props.nodeModules || [],
         externalModules: props.externalModules || ["@aws-sdk/*", "aws-lambda"],
       },
-      vpcSubnets: props.allowPublicSubnet ? { subnetType: ec2.SubnetType.PUBLIC } : { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+
     });
 
     // Add permission for API Gateway to invoke this Lambda function by default

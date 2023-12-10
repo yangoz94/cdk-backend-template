@@ -3,14 +3,17 @@ import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { BackendStack } from '../lib/BackendStack';
 import { InfrastructureStack } from '../lib/InfrastructureStack';
-const app = new cdk.App();
 
-new InfrastructureStack(app, 'InfrastructureStack', {
+const app = new cdk.App();
+const APP_NAME = process.env.APP_NAME as string || "CDKBackendTemplate";
+
+
+const infrastructureStack = new InfrastructureStack(app, 'InfrastructureStack', {
   env: {
     account: process.env.CDK_DEFAULT_ACCOUNT,
     region: process.env.CDK_DEFAULT_REGION,
   },
-  appName: process.env.APP_NAME as string,
+  appName: APP_NAME,
 });
 
 new BackendStack(app, 'BackendStack', {
@@ -19,5 +22,6 @@ new BackendStack(app, 'BackendStack', {
     account: process.env.CDK_DEFAULT_ACCOUNT,
     region: process.env.CDK_DEFAULT_REGION,
   },
-  appName: process.env.APP_NAME as string,
+  appName: APP_NAME,
+  vpc: infrastructureStack.vpc, //Constructed VPC passed as a prop
 });

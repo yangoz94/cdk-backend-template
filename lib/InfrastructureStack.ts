@@ -12,10 +12,10 @@ export class InfrastructureStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: InfrastructureStackProps) {
     super(scope, id, props);
 
-    this.vpc = new OgiVpc(this, {
-      appName: props.appName,
-      vpcEndpoints: ["dynamodb", "s3"],
-      privateSubnetType: cdk.aws_ec2.SubnetType.PRIVATE_ISOLATED,
-    }).vpc;
-  }
+    this.vpc = new OgiVpc(this, `${props.appName}`, {
+        vpcName: `${props.appName}`,
+        vpcEndpoints: ["dynamodb", "apigateway"],
+        natGateways:1,
+        }).vpc;
+    }   
 }
