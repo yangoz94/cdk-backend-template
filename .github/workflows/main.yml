@@ -42,8 +42,8 @@ jobs:
             if [ -d "$d" ]; then
               echo "Installing dependencies for $d"
               cd $d
-              npm install
-              cd ../../../
+              npm ci
+              cd ../../..
             fi
           done
       - name: Bootstrap CDK
@@ -62,56 +62,54 @@ jobs:
           CDK_DEFAULT_ACCOUNT: ${{ secrets.AWS_ACCOUNT_ID }} // for bootstrap convenience only
           CDK_DEFAULT_REGION: ${{ secrets.AWS_REGION }} // for bootstrap convenience only
           ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
-
-
   deploy_main:
-    name: deploy_main
-    if: github.ref == 'refs/heads/main'
-    environment: main
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Setup QEMU
-        uses: docker/setup-qemu-action@v2
-      - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Install dependencies and build CDK app
-        run: |
-          export CI=true
-          npm install -g aws-cdk
-          npm ci
-          npm run build   
-     - name: Install Lambda dependencies
-        run: |
-          for d in src/lambdas/* ; do
-            if [ -d "$d" ]; then
-              echo "Installing dependencies for $d"
-              cd $d
-              npm install
-              cd ../../../
-            fi
-          done
-      - name: Bootstrap CDK
-        run: |
-          cdk bootstrap aws://${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.AWS_REGION }}
-      - name: Synthesize and deploy CDK app
-        run: |
-          cdk synth
-          cdk deploy --verbose --require-approval never
-        env:
-          APP_NAME: ${{ secrets.APP_NAME}}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          CDK_DEFAULT_ACCOUNT: ${{ secrets.AWS_ACCOUNT_ID }} // for bootstrap convenience only
-          CDK_DEFAULT_REGION: ${{ secrets.AWS_REGION }} // for bootstrap convenience only
-          ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
+  name: deploy_main
+  if: github.ref == 'refs/heads/main'
+  environment: main
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    - name: Setup QEMU
+      uses: docker/setup-qemu-action@v2
+    - name: Setup Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    - name: Install dependencies and build CDK app
+      run: |
+        export CI=true
+        npm install -g aws-cdk
+        npm ci
+        npm run build   
+    - name: Install Lambda dependencies
+      run: |
+        for d in src/lambdas/* ; do
+          if [ -d "$d" ]; then
+            echo "Installing dependencies for $d"
+            cd $d
+            npm ci
+            cd ../../..
+          fi
+        done
+    - name: Bootstrap CDK
+      run: |
+        cdk bootstrap aws://${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.AWS_REGION }}
+    - name: Synthesize and deploy CDK app
+      run: |
+        cdk synth
+        cdk deploy --verbose --require-approval never
+      env:
+        APP_NAME: ${{ secrets.APP_NAME}}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+        AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+        CDK_DEFAULT_ACCOUNT: ${{ secrets.AWS_ACCOUNT_ID }} // for bootstrap convenience only
+        CDK_DEFAULT_REGION: ${{ secrets.AWS_REGION }} // for bootstrap convenience only
+        ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
