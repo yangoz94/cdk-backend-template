@@ -7,34 +7,20 @@ import { OgiEventBus } from "../src/constructs/OgiEventBus";
 import { OgiVpc } from "../src/constructs/OgiVpc";
 import { OgiApiGateway } from "../src/constructs/OgiApiGateway";
 
-export interface CdkBackendStackProps extends cdk.StackProps {
+export interface BackendStackProps extends cdk.StackProps {
   qualifier: string; // will be appended to the stack resources (10 characters max)
   appName: string;
 }
-export class CdkBackendStack extends cdk.Stack {
-  public readonly vpc: IVpc;
+export class BackendStack extends cdk.Stack {
+  public readonly vpc: cdk.aws_ec2.IVpc;
 
-  constructor(scope: Construct, id: string, props: CdkBackendStackProps) {
+  constructor(scope: Construct, id: string, props: BackendStackProps) {
     super(scope, id, props);
-    this.templateOptions.description = `(${props.appName}) - ${props?.qualifier} - ${this.templateOptions.description}`;
 
-    /*******VPC LOOKUP OR CREATION*******/
-    const vpc = cdk.aws_ec2.Vpc.fromLookup(this, `${props.appName}-vpc`, {
-      vpcName: `${props.appName}-vpc`, // Look up the VPC by name
+    /********** VPC LOOKUP**********/
+    this.vpc = cdk.aws_ec2.Vpc.fromLookup(this, `${props.appName}-vpc`, {
+      vpcName: `${props.appName}-vpc`,
     });
-
-    // If VPC is not found in lookup, this.vpc will be undefined.
-    // In this case, create a new VPC.
-
-    if (typeof vpc === "undefined") {
-      this.vpc = new OgiVpc(this, {
-        appName: props.appName,
-        vpcEndpoints: ["dynamodb", "s3"], // Add VPC endpoints for DynamoDB and S3 in the VPC
-        privateSubnetType: cdk.aws_ec2.SubnetType.PRIVATE_ISOLATED,
-      }).vpc;
-    } else {
-      this.vpc = vpc;
-    }
 
     /**********LAMBDA**********/
     const helloWorldLambda = new OgiLambda(this, {
