@@ -36,6 +36,16 @@ jobs:
           npm install -g aws-cdk
           npm ci
           npm run build
+      - name: Install Lambda dependencies
+        run: |
+          for d in src/lambdas/* ; do
+            if [ -d "$d" ]; then
+              echo "Installing dependencies for $d"
+              cd $d
+              npm install
+              cd ../../../
+            fi
+          done
       - name: Bootstrap CDK
         run: |
           cdk bootstrap aws://${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.AWS_REGION }}
@@ -52,6 +62,7 @@ jobs:
           CDK_DEFAULT_ACCOUNT: ${{ secrets.AWS_ACCOUNT_ID }} // for bootstrap convenience only
           CDK_DEFAULT_REGION: ${{ secrets.AWS_REGION }} // for bootstrap convenience only
           ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
+
 
   deploy_main:
     name: deploy_main
@@ -78,6 +89,19 @@ jobs:
           npm install -g aws-cdk
           npm ci
           npm run build   
+     - name: Install Lambda dependencies
+        run: |
+          for d in src/lambdas/* ; do
+            if [ -d "$d" ]; then
+              echo "Installing dependencies for $d"
+              cd $d
+              npm install
+              cd ../../../
+            fi
+          done
+      - name: Bootstrap CDK
+        run: |
+          cdk bootstrap aws://${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.AWS_REGION }}
       - name: Synthesize and deploy CDK app
         run: |
           cdk synth
@@ -88,4 +112,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          CDK_DEFAULT_ACCOUNT: ${{ secrets.AWS_ACCOUNT_ID }} // for bootstrap convenience only
+          CDK_DEFAULT_REGION: ${{ secrets.AWS_REGION }} // for bootstrap convenience only
           ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
