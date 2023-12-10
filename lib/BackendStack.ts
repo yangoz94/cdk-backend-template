@@ -33,10 +33,10 @@ export class BackendStack extends cdk.Stack {
 
     const githubLambda = new OgiLambda(this, {
       appName: props.appName,
-      lambdaName: "github-sample",
+      lambdaName: "greetings",
       vpc: this.vpc,
       permissions: ["dynamodb"],
-      nodeModules: ["axios"],
+      nodeModules: ["axios"], // just an example
       vpcSubnets: {
         subnetType: cdk.aws_ec2.SubnetType.PRIVATE_WITH_EGRESS,
       },
@@ -49,7 +49,7 @@ export class BackendStack extends cdk.Stack {
         {
           httpMethod: "GET",
           lambdaFunction: githubLambda,
-          resourcePath: "github",
+          resourcePath: "greetings",
         },
         // TODO: Add more endpoints here if needed
       ],
@@ -57,24 +57,23 @@ export class BackendStack extends cdk.Stack {
 
     /**********EVENT BUS**********/
     const myEventBus = new OgiEventBus(this, {
-      appName: props.appName,
-      eventBusName: "test-event-bus",
+      eventBusName: `${props.appName}-event-bus`,
     });
+    
 
     /**********EVENT RULE**********/
     myEventBus.addRule({
       ruleName: `event-rule`,
       lambdaTarget: helloWorldLambda.lambdaFunction,
       eventPattern: {
-        source: ["dynamodb"],
-        detailType: ["NewRegistration"],
+          source: ["dynamodb"],
+          detailType: ["NewRegistration"],
       },
-    });
+  });
 
     /**********SCHEDULED RULE OPTION 1**********/
     const scheduledRuleOption1 = new OgiScheduledRule(this,'ScheduledRule1',  {
-      appName: props.appName,
-      ruleName: `ScheduledRule1`,
+      ruleName: `${props.appName}-ScheduledRule1`,
       lambdaTarget: helloWorldLambda.lambdaFunction,
       scheduleConfig: {
         at: "06:30", // UTC
@@ -83,8 +82,7 @@ export class BackendStack extends cdk.Stack {
 
     /**********SCHEDULED RULE OPTION 2**********/
     const scheduledRuleOption2 = new OgiScheduledRule(this,'ScheduledRule2', {
-      appName: props.appName,
-      ruleName: `ScheduledRule2`,
+      ruleName: `${props.appName}-ScheduledRule2`,
       lambdaTarget: helloWorldLambda.lambdaFunction,
       scheduleConfig: {
         every: 7,

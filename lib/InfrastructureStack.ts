@@ -15,7 +15,7 @@ export class InfrastructureStack extends cdk.Stack {
     this.vpc = new OgiVpc(this, `${props.appName}`, {
         vpcName: `${props.appName}`,
         vpcEndpoints: ["dynamodb", "apigateway"],
-        natGateways:1,
+        natGateways:0, // set to 1 or more if you want your lambda to access the internet outside the VPC
         }).vpc;
     }   
 }
