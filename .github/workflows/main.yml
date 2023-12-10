@@ -83,7 +83,7 @@ jobs:
       - name: Synthesize and deploy CDK app
         run: |
           cdk synth
-          cdk deploy --verbose --require-approval never
+          cdk deploy --all --verbose --require-approval never
         env:
           APP_NAME: ${{ secrets.APP_NAME}}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
