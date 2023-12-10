@@ -36,16 +36,6 @@ jobs:
           npm install -g aws-cdk
           npm ci
           npm run build
-      - name: Install Lambda dependencies
-        run: |
-          for d in src/lambdas/* ; do
-            if [ -d "$d" ]; then
-              echo "Installing dependencies for $d"
-              cd $d
-              npm ci
-              cd ../../..
-            fi
-          done
       - name: Bootstrap CDK
         run: |
           cdk bootstrap aws://${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.AWS_REGION }}
@@ -87,16 +77,6 @@ jobs:
           npm install -g aws-cdk
           npm ci
           npm run build   
-      - name: Install Lambda dependencies
-        run: |
-          for d in src/lambdas/* ; do
-            if [ -d "$d" ]; then
-              echo "Installing dependencies for $d"
-              cd $d
-              npm ci
-              cd ../../..
-            fi
-          done
       - name: Bootstrap CDK
         run: |
           cdk bootstrap aws://${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.AWS_REGION }}

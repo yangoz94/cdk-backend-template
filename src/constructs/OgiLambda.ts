@@ -24,6 +24,7 @@ export interface OgiLambdaProps extends Omit<lambda.FunctionProps, 'runtime' | '
   handler?: string;
   allowPublicSubnet?: boolean;
   nodeModules?: string[];
+  externalModules?: string[];
   allowApiGatewayInvoke?: boolean; // New property
 }
 
@@ -53,7 +54,9 @@ export class OgiLambda extends Construct {
       handler: props.handler || "index.handler",
       entry: path.join(__dirname, `../src/lambdas/${props.lambdaName}/index.ts`),
       bundling: {
-        nodeModules: props.nodeModules
+        sourceMap: false,
+        nodeModules: props.nodeModules || [],
+        externalModules: props.externalModules || ["@aws-sdk/*", "aws-lambda"],
       },
       vpcSubnets: props.allowPublicSubnet ? { subnetType: ec2.SubnetType.PUBLIC } : { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
     });
