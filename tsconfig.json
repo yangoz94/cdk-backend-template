@@ -22,10 +22,17 @@
     "strictPropertyInitialization": false,
     "typeRoots": [
       "./node_modules/@types"
-    ]
+    ],
   },
   "exclude": [
     "node_modules",
     "cdk.out"
-  ]
+  ],
+  "moduleResolution": "node",
+  "baseUrl": ".",
+  "outDir": "dist",
+  "typeRoots": ["./node_modules/@types"],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
 }
