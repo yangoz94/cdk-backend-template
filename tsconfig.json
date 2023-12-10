@@ -32,7 +32,4 @@
   "baseUrl": ".",
   "outDir": "dist",
   "typeRoots": ["./node_modules/@types"],
-  "ts-node": {
-    "require": ["tsconfig-paths/register"]
-  },
 }
