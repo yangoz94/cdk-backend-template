@@ -33,7 +33,6 @@ jobs:
       - name: Install dependencies and build CDK app
         run: |
           export CI=true
-          npm install
           npm install -g aws-cdk
           npm ci
           npm run build
@@ -76,7 +75,6 @@ jobs:
       - name: Install dependencies and build CDK app
         run: |
           export CI=true
-          npm install
           npm install -g aws-cdk
           npm ci
           npm run build   
