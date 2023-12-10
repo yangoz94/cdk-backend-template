@@ -10,4 +10,5 @@ new CdkBackendStack(app, 'CdkBackendStack', {
     account: process.env.CDK_DEFAULT_ACCOUNT , // bootsTrapping through CI/CD requires CDK_DEFAULT_ACCOUNT and CDK_DEFAULT_REGION to be set 
     region: process.env.CDK_DEFAULT_REGION, // after the stack is created, you can replace these env variables with AWS_ACCOUNT and AWS_REGION
   },
+  appName: process.env.APP_NAME as string,
 });
