@@ -11,6 +11,7 @@ export interface BackendStackProps extends cdk.StackProps {
   qualifier: string; // will be appended to the stack resources (10 characters max)
   appName: string;
   vpc: IVpc;
+  apiGwApiKey?: string;
 }
 export class BackendStack extends cdk.Stack {
   private vpc: IVpc;
@@ -31,7 +32,7 @@ export class BackendStack extends cdk.Stack {
       },
     });
 
-    const githubLambda = new OgiLambda(this, {
+    const greetingsLambda = new OgiLambda(this, {
       appName: props.appName,
       lambdaName: "greetings",
       vpc: this.vpc,
@@ -47,10 +48,18 @@ export class BackendStack extends cdk.Stack {
       apiGatewayName: `${props.appName}-api-gateway`,
       endpoints: [
         {
+          // Example protected endpoint
           httpMethod: "GET",
-          lambdaFunction: githubLambda,
-          resourcePath: "greetings",
+          lambdaFunction: greetingsLambda,
+          resourcePath: "/greetings",
+          apiKey:  props.apiGwApiKey,
         },
+        {
+          // Example unprotected endpoint
+          httpMethod: "GET",
+          lambdaFunction: helloWorldLambda,
+          resourcePath: "/hello-world",
+        }
         // TODO: Add more endpoints here if needed
       ],
     });
@@ -63,8 +72,8 @@ export class BackendStack extends cdk.Stack {
 
     /**********EVENT RULE**********/
     myEventBus.addRule({
-      ruleName: `event-rule`,
-      lambdaTarget: helloWorldLambda.lambdaFunction,
+      ruleName: `${props.appName}-event-rule`,
+      lambdaTarget: helloWorldLambda,
       eventPattern: {
           source: ["dynamodb"],
           detailType: ["NewRegistration"],
@@ -74,19 +83,20 @@ export class BackendStack extends cdk.Stack {
     /**********SCHEDULED RULE OPTION 1**********/
     const scheduledRuleOption1 = new OgiScheduledRule(this,'ScheduledRule1',  {
       ruleName: `${props.appName}-ScheduledRule1`,
-      lambdaTarget: helloWorldLambda.lambdaFunction,
+      lambdaTarget: helloWorldLambda,
       scheduleConfig: {
         at: "06:30", // UTC
       },
-    });
+    }); 
 
     /**********SCHEDULED RULE OPTION 2**********/
     const scheduledRuleOption2 = new OgiScheduledRule(this,'ScheduledRule2', {
       ruleName: `${props.appName}-ScheduledRule2`,
-      lambdaTarget: helloWorldLambda.lambdaFunction,
+      lambdaTarget: helloWorldLambda,
       scheduleConfig: {
         every: 7,
         unit: "days",
+        startTime: "06:30", // UTC
       },
     });
   }

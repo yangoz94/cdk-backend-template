@@ -36,11 +36,15 @@ jobs:
           npm install -g aws-cdk
           npm ci
           npm run build
+      - name: Bootstrap CDK
+        run: |
+          cdk bootstrap aws://${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.AWS_REGION }}
       - name: Synthesize and deploy CDK app
         run: |
           cdk synth
           cdk deploy --verbose --require-approval never
         env:
+          API_KEY: ${{ secrets.API_KEY }}
           APP_NAME: ${{ secrets.APP_NAME}}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -74,11 +78,15 @@ jobs:
           npm install -g aws-cdk
           npm ci
           npm run build   
+      - name: Bootstrap CDK
+        run: |
+          cdk bootstrap aws://${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.AWS_REGION }}
       - name: Synthesize and deploy CDK app
         run: |
           cdk synth
           cdk deploy --all --verbose --require-approval never
         env:
+          API_GATEWAY_API_KEY: ${{ secrets.API_GATEWAY_API_KEY }}
           APP_NAME: ${{ secrets.APP_NAME}}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -87,3 +95,4 @@ jobs:
           CDK_DEFAULT_ACCOUNT: ${{ secrets.AWS_ACCOUNT_ID }} // for bootstrap convenience only
           CDK_DEFAULT_REGION: ${{ secrets.AWS_REGION }} // for bootstrap convenience only
           ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
+          

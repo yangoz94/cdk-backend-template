@@ -7,21 +7,23 @@ import { InfrastructureStack } from '../lib/InfrastructureStack';
 const app = new cdk.App();
 const APP_NAME = process.env.APP_NAME as string || "CDKBackendTemplate";
 
-
-const infrastructureStack = new InfrastructureStack(app, 'InfrastructureStack', {
+// Create the parent stack
+const parentStack = new cdk.Stack(app, `${APP_NAME}Stack`, {
   env: {
     account: process.env.CDK_DEFAULT_ACCOUNT,
     region: process.env.CDK_DEFAULT_REGION,
   },
+});
+
+//nested stack - 1
+const infrastructureStack = new InfrastructureStack(parentStack, 'InfrastructureStack', {
   appName: APP_NAME,
 });
 
-new BackendStack(app, 'BackendStack', {
+//nested stack - 2
+const backendStack  = new BackendStack(parentStack, 'BackendStack', {
   qualifier: process.env.ENVIRONMENT as string,
-  env: {
-    account: process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_DEFAULT_REGION,
-  },
   appName: APP_NAME,
   vpc: infrastructureStack.vpc, //Constructed VPC passed as a prop
+  apiGwApiKey: process.env.API_GATEWAY_API_KEY,
 });

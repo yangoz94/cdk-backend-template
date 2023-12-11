@@ -2,6 +2,7 @@ import * as apigw from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 import { OgiLambda } from './OgiLambda';
 
+
 export interface OgiApiGatewayProps extends apigw.RestApiProps {
   apiGatewayName: string;
   endpoints?: EndpointConfig[];
@@ -11,6 +12,7 @@ export interface EndpointConfig {
   httpMethod: string;
   lambdaFunction: OgiLambda;
   resourcePath: string;
+  apiKey?: string; // Add this line
 }
 
 export class OgiApiGateway extends Construct {
@@ -44,6 +46,11 @@ export class OgiApiGateway extends Construct {
       parentResource = existingResource ?? parentResource.addResource(part);
     }
   
-    parentResource.addMethod(endpointConfig.httpMethod.toUpperCase(), lambdaIntegration);
+    // Check if apiKey is provided
+    const methodOptions = endpointConfig.apiKey
+      ? { apiKeyRequired: true }
+      : undefined;
+
+    parentResource.addMethod(endpointConfig.httpMethod.toUpperCase(), lambdaIntegration, methodOptions);
   }
 }
