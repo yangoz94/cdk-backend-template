@@ -3,6 +3,7 @@ import * as targets from 'aws-cdk-lib/aws-events-targets';
 import { Construct } from 'constructs';
 import * as cdk from 'aws-cdk-lib';
 import { OgiLambda } from './OgiLambda';
+import { Schedule } from 'aws-cdk-lib/aws-events';
 
 export interface ScheduleConfig {
   every?: number;
@@ -26,15 +27,15 @@ export class OgiScheduledRule extends Construct {
     }
 
     let schedule: events.Schedule;
-    if (props.scheduleConfig.every && props.scheduleConfig.unit) {
-      const rate = cdk.Duration[props.scheduleConfig.unit]
-      const startTime = props.scheduleConfig.startTime ? `T${props.scheduleConfig.startTime}` : '';
-      schedule = events.Schedule.expression(`rate(${rate}${startTime})`);
-    } else if (props.scheduleConfig.at) {
-      schedule = events.Schedule.cron({ minute: props.scheduleConfig.at.split(':')[1], hour: props.scheduleConfig.at.split(':')[0] });
-    } else {
-      throw new Error('Invalid schedule configuration: You must specify either a specific time ("at") or an interval ("every" and "unit").');
-    }
+if (props.scheduleConfig.every && props.scheduleConfig.unit) {
+  const rate = `${props.scheduleConfig.every} ${props.scheduleConfig.unit}`
+  const startTime = props.scheduleConfig.startTime ? `T${props.scheduleConfig.startTime}` : '';
+  schedule = events.Schedule.expression(`rate(${rate}${startTime})`);
+} else if (props.scheduleConfig.at) {
+  schedule = Schedule.cron({ minute: props.scheduleConfig.at.split(':')[1], hour: props.scheduleConfig.at.split(':')[0] });
+} else {
+  throw new Error('Invalid schedule configuration: You must specify either a specific time ("at") or an interval ("every" and "unit").');
+}
 
     new events.Rule(this, `${props.ruleName}`, {
       ruleName: `${props.ruleName}`,

@@ -2,11 +2,11 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { OgiVpc } from "../src/constructs/OgiVpc";
 
-export interface InfrastructureStackProps extends cdk.StackProps {
+export interface InfrastructureStackProps extends cdk.NestedStackProps {
   appName: string;
 }
 
-export class InfrastructureStack extends cdk.Stack {
+export class InfrastructureStack extends cdk.NestedStack {
   public readonly vpc: cdk.aws_ec2.IVpc;
 
   constructor(scope: Construct, id: string, props: InfrastructureStackProps) {

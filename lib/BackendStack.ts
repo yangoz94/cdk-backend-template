@@ -7,13 +7,13 @@ import { OgiEventBus } from "../src/constructs/OgiEventBus";
 import { OgiVpc } from "../src/constructs/OgiVpc";
 import { OgiApiGateway } from "../src/constructs/OgiApiGateway";
 
-export interface BackendStackProps extends cdk.StackProps {
+export interface BackendStackProps extends cdk.NestedStackProps {
   qualifier: string; // will be appended to the stack resources (10 characters max)
   appName: string;
   vpc: IVpc;
   apiGwApiKey?: string;
 }
-export class BackendStack extends cdk.Stack {
+export class BackendStack extends cdk.NestedStack {
   private vpc: IVpc;
 
   constructor(scope: Construct, id: string, props: BackendStackProps) {
