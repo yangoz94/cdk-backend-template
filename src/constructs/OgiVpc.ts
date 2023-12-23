@@ -14,7 +14,7 @@ export class OgiVpc extends Construct {
   constructor(scope: Construct, id: string, props: OgiVpcProps) {
     super(scope, id);
 
-    this.vpc = new ec2.Vpc(this, `${props.vpcName}-vpc`, {
+    this.vpc = new ec2.Vpc(this, `${props.vpcName}`, {
       ...props,
       cidr: props.cidr || '10.0.0.0/16',
       maxAzs: 3, // Maximum number of Availability Zones to use
@@ -39,7 +39,7 @@ export class OgiVpc extends Construct {
     });
 
     // Add the VPC name as a tag.
-    cdk.Tags.of(this.vpc).add('Name', `${props.vpcName}-vpc`);
+    cdk.Tags.of(this.vpc).add('Name', `${props.vpcName}`);
 
     // Add VPC endpoints
     if (props.vpcEndpoints) {
