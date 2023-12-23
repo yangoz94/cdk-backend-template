@@ -85,7 +85,7 @@ export class BackendStack extends cdk.NestedStack {
       ruleName: `${props.appName}-ScheduledRule1`,
       lambdaTarget: helloWorldLambda,
       scheduleConfig: {
-        at: "06:30", // UTC
+        at: "06:30", // UTC every day
       },
     }); 
 
@@ -94,9 +94,11 @@ export class BackendStack extends cdk.NestedStack {
       ruleName: `${props.appName}-ScheduledRule2`,
       lambdaTarget: helloWorldLambda,
       scheduleConfig: {
-        every: 7,
-        unit: "days",
-        startTime: "06:30", // UTC
+        at: "06:30", // UTC
+        interval: {
+          value: 7,
+          unit: "days",
+        },
       },
     });
   }
