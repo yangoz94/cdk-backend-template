@@ -26,8 +26,8 @@ export class InfrastructureStack extends cdk.NestedStack {
     /* DynamoDB Table with DDB Toolbox */
     this.table = new OgiDynamoDB(this, `${props.appName}-ddb`, {
       tableName: `${props.appName}-table`,
-      partitionKey: 'pk',
-      sortKey: 'sk',
+      partitionKey: 'PK',
+      sortKey: 'SK',
     }).dynamoTable;
   }
 }

@@ -22,7 +22,7 @@ type OgiDynamoDBProps  =  {
   tableName: string;
   partitionKey: string, 
   sortKey: string, 
-  indexes?: Indexes;
+  gsi?: Indexes;
 }
 
 export class OgiDynamoDB extends Construct {
@@ -44,11 +44,12 @@ export class OgiDynamoDB extends Construct {
       partitionKey: { name: props.partitionKey, type: cdk.aws_dynamodb.AttributeType.STRING },
       sortKey: { name: props.sortKey, type: cdk.aws_dynamodb.AttributeType.STRING },
       removalPolicy: cdk.RemovalPolicy.DESTROY, // adjust as needed
+      
     });
 
     // Add GSIs
-    if (props.indexes) {
-      for (const [indexName, keys] of Object.entries(props.indexes)) {
+    if (props.gsi) {
+      for (const [indexName, keys] of Object.entries(props.gsi)) {
         this.dynamoTable.addGlobalSecondaryIndex({
           indexName: indexName,
           partitionKey: { 
@@ -69,7 +70,7 @@ export class OgiDynamoDB extends Construct {
       partitionKey: props.partitionKey,
       sortKey: props.sortKey,
       DocumentClient: DocumentClient,
-      indexes: props.indexes
+      indexes: props.gsi
     })
   }
 }
