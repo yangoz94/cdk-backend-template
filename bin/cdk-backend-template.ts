@@ -16,12 +16,12 @@ const parentStack = new cdk.Stack(app, `${APP_NAME}Stack`, {
 });
 
 // Nested stack - 1: InfrastructureStack
-const infrastructureStack = new InfrastructureStack(parentStack, `${APP_NAME}InfrastructureStack`, {
+const infrastructureStack = new InfrastructureStack(parentStack, `InfrastructureStack`, {
   appName: APP_NAME,
 });
 
 // Nested stack - 2: BackendStack
-const backendStack = new BackendStack(parentStack, `${APP_NAME}BackendStack`, {
+const backendStack = new BackendStack(parentStack, `BackendStack`, {
   qualifier: process.env.ENVIRONMENT as string,
   appName: APP_NAME,
   vpc: infrastructureStack.vpc, // Constructed VPC passed as a prop

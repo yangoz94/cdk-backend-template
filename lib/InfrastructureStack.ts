@@ -1,7 +1,6 @@
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { OgiVpc } from "../src/constructs/OgiVpc";
-import { Table } from 'dynamodb-toolbox'
 import { OgiDynamoDB } from "../src/constructs/OgiDynamoDB";
 
 
@@ -9,11 +8,9 @@ export interface InfrastructureStackProps extends cdk.NestedStackProps {
   appName: string;
 }
 
-export type DDBToolboxTable = Table<string, string, string>;
-
 export class InfrastructureStack extends cdk.NestedStack {
   public readonly vpc: cdk.aws_ec2.IVpc;
-  public readonly table: DDBToolboxTable;
+  public readonly table: cdk.aws_dynamodb.TableV2;
 
 
   constructor(scope: Construct, id: string, props: InfrastructureStackProps) {
@@ -28,9 +25,9 @@ export class InfrastructureStack extends cdk.NestedStack {
 
     /* DynamoDB Table with DDB Toolbox */
     this.table = new OgiDynamoDB(this, `${props.appName}-ddb`, {
-      name: `${props.appName}-table`,
+      tableName: `${props.appName}-table`,
       partitionKey: 'pk',
       sortKey: 'sk',
-    }).table;
+    }).dynamoTable;
   }
 }
