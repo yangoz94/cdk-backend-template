@@ -1,9 +1,8 @@
-
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
-import { Table } from 'dynamodb-toolbox'
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
-import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
+import { Table } from "dynamodb-toolbox";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
 type IndexKeys = {
   partitionKey: string;
@@ -18,33 +17,41 @@ type Indexes = {
 
 export type DDBToolboxTable = Table<string, string, string>;
 
-type OgiDynamoDBProps  =  {
+type OgiDynamoDBProps = {
   tableName: string;
-  partitionKey: string, 
-  sortKey: string, 
+  partitionKey: string;
+  sortKey: string;
   gsi?: Indexes;
-}
+};
 
 export class OgiDynamoDB extends Construct {
-  public readonly dbToolBoxTable: DDBToolboxTable
-  public readonly dynamoTable: cdk.aws_dynamodb.TableV2
+  public readonly dbToolBoxTable: DDBToolboxTable;
+  public readonly dynamoTable: cdk.aws_dynamodb.TableV2;
 
   constructor(scope: Construct, id: string, props: OgiDynamoDBProps) {
     super(scope, id);
 
     const marshallOptions = {
-      convertEmptyValues: false 
-    }
-    const translateConfig = { marshallOptions }
-    const DocumentClient = DynamoDBDocumentClient.from(new DynamoDBClient(), translateConfig)
+      convertEmptyValues: false,
+    };
+    const translateConfig = { marshallOptions };
+    const DocumentClient = DynamoDBDocumentClient.from(
+      new DynamoDBClient(),
+      translateConfig
+    );
 
     // Create DynamoDB table with AWS CDK
-    this.dynamoTable = new cdk.aws_dynamodb.TableV2(this, 'Table', {
+    this.dynamoTable = new cdk.aws_dynamodb.TableV2(this, "Table", {
       tableName: props.tableName,
-      partitionKey: { name: props.partitionKey, type: cdk.aws_dynamodb.AttributeType.STRING },
-      sortKey: { name: props.sortKey, type: cdk.aws_dynamodb.AttributeType.STRING },
+      partitionKey: {
+        name: props.partitionKey,
+        type: cdk.aws_dynamodb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: props.sortKey,
+        type: cdk.aws_dynamodb.AttributeType.STRING,
+      },
       removalPolicy: cdk.RemovalPolicy.DESTROY, // adjust as needed
-      
     });
 
     // Add GSIs
@@ -52,14 +59,17 @@ export class OgiDynamoDB extends Construct {
       for (const [indexName, keys] of Object.entries(props.gsi)) {
         this.dynamoTable.addGlobalSecondaryIndex({
           indexName: indexName,
-          partitionKey: { 
-            name: keys.partitionKey, 
-            type: keys.partitionKeyType || cdk.aws_dynamodb.AttributeType.STRING 
+          partitionKey: {
+            name: keys.partitionKey,
+            type:
+              keys.partitionKeyType || cdk.aws_dynamodb.AttributeType.STRING,
           },
-          sortKey: keys.sortKey ? { 
-            name: keys.sortKey, 
-            type: keys.sortKeyType || cdk.aws_dynamodb.AttributeType.STRING 
-          } : undefined,
+          sortKey: keys.sortKey
+            ? {
+                name: keys.sortKey,
+                type: keys.sortKeyType || cdk.aws_dynamodb.AttributeType.STRING,
+              }
+            : undefined,
         });
       }
     }
@@ -71,6 +81,14 @@ export class OgiDynamoDB extends Construct {
       sortKey: props.sortKey,
       DocumentClient: DocumentClient,
       indexes: props.gsi
-    })
+        ? Object.entries(props.gsi).reduce((acc, [indexName, keys]) => {
+            acc[indexName] = {
+              partitionKey: keys.partitionKey,
+              sortKey: keys.sortKey,
+            };
+            return acc;
+          }, {} as Indexes)
+        : undefined,
+    });
   }
 }

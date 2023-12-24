@@ -10,8 +10,8 @@ const APP_NAME = process.env.APP_NAME || "CDKBackendTemplate";
 // Parent stack (not a nested stack)
 const parentStack = new cdk.Stack(app, `${APP_NAME}Stack`, {
   env: {
-    account: process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_DEFAULT_REGION,
+    account: process.env.AWS_ACCOUNT_ID,
+    region: process.env.AWS_REGION,
   },
 });
 
