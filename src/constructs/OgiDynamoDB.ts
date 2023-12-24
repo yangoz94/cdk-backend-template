@@ -1,5 +1,5 @@
 import { Table } from 'dynamodb-toolbox'
-import { DynamoDB, DynamoDBClient } from '@aws-sdk/client-dynamodb'
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
 import { Construct } from "constructs";
 
