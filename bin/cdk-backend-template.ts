@@ -22,8 +22,8 @@ const infrastructureStack = new InfrastructureStack(parentStack, `Infrastructure
 
 // Nested stack - 2: BackendStack
 const backendStack = new BackendStack(parentStack, `BackendStack`, {
-  qualifier: process.env.ENVIRONMENT as string,
   appName: APP_NAME,
   vpc: infrastructureStack.vpc, // Constructed VPC passed as a prop
+  tableName:infrastructureStack.table.tableName,
   apiGwApiKey: process.env.API_GATEWAY_API_KEY,
 });

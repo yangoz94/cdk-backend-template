@@ -47,7 +47,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
   deploy_main:
     name: deploy_main
     if: github.ref == 'refs/heads/main'
@@ -84,5 +83,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
           
