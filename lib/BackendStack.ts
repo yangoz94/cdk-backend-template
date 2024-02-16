@@ -4,12 +4,12 @@ import { Construct } from "constructs";
 import { OgiLambda, OgiLambdaProps } from "../src/constructs/OgiLambda";
 import { OgiScheduledRule } from "../src/constructs/OgiScheduledRule";
 import { OgiEventBus } from "../src/constructs/OgiEventBus";
-import { OgiVpc } from "../src/constructs/OgiVpc";
 import { OgiApiGateway } from "../src/constructs/OgiApiGateway";
+import { OgiECSFargate } from "../src/constructs/OgiECSFargate";
 
 export interface BackendStackProps extends cdk.NestedStackProps {
-  qualifier: string; // will be appended to the stack resources (10 characters max)
   appName: string;
+  tableName:string,
   vpc: IVpc;
   apiGwApiKey?: string;
 }
@@ -100,6 +100,20 @@ export class BackendStack extends cdk.NestedStack {
           unit: "days",
         },
       },
+    });
+
+    /********** LOADBALANCED ECS FARGATE SERVICE**********/
+    const fargateService = new OgiECSFargate(this, `${props.appName}-fargate-service`, {
+      appName: props.appName,
+      domainName: "api.serverless.oguzhanyangoz.com",
+      serviceName: "go-web-server",
+      vpc: this.vpc,
+      environmentVariables: {
+        APP_NAME: props.appName,
+        TABLE_NAME: props.tableName,
+      },
+      imagePathRelativeToRoot: "src/containers/go-web-server/",
+      enableAutoScaling: false,
     });
   }
 }
