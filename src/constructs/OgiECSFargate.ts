@@ -133,7 +133,7 @@ export class OgiECSFargate extends Construct {
           },
         ],
         healthCheck: {
-          command: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"],
+          command: ["CMD-SHELL", "curl -f https://localhost:443/health || exit 1"],
           interval: Duration.seconds(5),
           timeout: Duration.seconds(4),
           retries: 2,
