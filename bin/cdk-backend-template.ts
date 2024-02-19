@@ -25,5 +25,6 @@ const backendStack = new BackendStack(parentStack, `BackendStack`, {
   appName: APP_NAME,
   vpc: infrastructureStack.vpc, // Constructed VPC passed as a prop
   tableName:infrastructureStack.table.tableName,
+  domainName: process.env.DOMAIN_NAME as string,
   apiGwApiKey: process.env.API_GATEWAY_API_KEY,
 });
