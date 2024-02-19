@@ -25,8 +25,10 @@ import path = require("path");
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 import { Duration } from "aws-cdk-lib";
 import {
+  ApplicationLoadBalancer,
   ApplicationProtocol,
   ListenerAction,
+  Protocol,
 } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 
 export interface OgiECSFargateProps {
@@ -44,6 +46,7 @@ export class OgiECSFargate extends Construct {
   public readonly cluster: ICluster;
   public readonly taskDefinition: FargateTaskDefinition;
   public readonly service: ApplicationLoadBalancedFargateService;
+  public readonly lb :ApplicationLoadBalancer;
 
   constructor(scope: Construct, id: string, props: OgiECSFargateProps) {
     super(scope, id);
@@ -87,13 +90,13 @@ export class OgiECSFargate extends Construct {
       }
     );
 
-    // create security group
-    const clusterSecurityGroup = this.cluster.connections;
-    clusterSecurityGroup.allowFrom(
-      ec2.Peer.anyIpv4(),
-      ec2.Port.tcp(443),
-      "Allow inbound HTTPS traffic"
-    );
+    // // create security group
+    // const clusterSecurityGroup = this.cluster.connections;
+    // clusterSecurityGroup.allowFrom(
+    //   ec2.Peer.anyIpv4(),
+    //   ec2.Port.tcp(443),
+    //   "Allow inbound HTTPS traffic"
+    // );
 
     // create a new Fargate Task Definition
     this.taskDefinition = new FargateTaskDefinition(
@@ -140,6 +143,7 @@ export class OgiECSFargate extends Construct {
       }
     );
 
+
     // create a new Fargate Service
     this.service = new ApplicationLoadBalancedFargateService(
       this,
@@ -162,7 +166,22 @@ export class OgiECSFargate extends Construct {
         protocol: ApplicationProtocol.HTTPS,
         redirectHTTP: true,
       }
-    );
+    )
+
+    this.lb = this.service.loadBalancer;
+
+    this.service.node.addDependency(this.lb);
+
+    this.service.targetGroup.configureHealthCheck({
+      path: "/health",
+      protocol: Protocol.HTTPS,
+      port: "443",
+      healthyThresholdCount: 2,
+      unhealthyThresholdCount: 2,
+      interval: Duration.seconds(5),
+      timeout: Duration.seconds(4),
+    });
+
 
     // setup AutoScaling policy
     if (props.enableAutoScaling) {
@@ -176,21 +195,5 @@ export class OgiECSFargate extends Construct {
         scaleOutCooldown: Duration.seconds(60),
       });
     }
-
-    // configure health check
-    this.service.targetGroup.configureHealthCheck({
-      path: "/health",
-      interval: Duration.seconds(30),
-      healthyThresholdCount: 2,
-    });
-
-    // Add a default action to the HTTPS listener
-    this.service.listener.addAction("DefaultAction", {
-      action: ListenerAction.fixedResponse(200, {
-        contentType: "text/plain",
-        messageBody: "OK",
-      }),
-    });
-
   }
 }
