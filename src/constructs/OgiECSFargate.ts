@@ -157,7 +157,7 @@ export class OgiECSFargate extends Construct {
         minHealthyPercent: 0,
         publicLoadBalancer: true,
         platformVersion: FargatePlatformVersion.LATEST,
-        loadBalancerName: `${props.appName}-${props.serviceName}-lb`,
+        loadBalancerName: `${props.serviceName}-lb`,
         listenerPort: 443,
         protocol: ApplicationProtocol.HTTPS,
         redirectHTTP: true,
