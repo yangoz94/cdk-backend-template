@@ -155,15 +155,11 @@ export class OgiECSFargate extends Construct {
       }
     )
 
-    this.lb = this.service.loadBalancer;
 
-
+    // load balancer health check
     this.service.targetGroup.configureHealthCheck({
       path: "/health",
       port: "80",
-
-      // healthyThresholdCount: 1,
-      // unhealthyThresholdCount: 1,
     });
 
     // setup AutoScaling policy
