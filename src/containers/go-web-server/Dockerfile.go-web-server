@@ -1,9 +1,6 @@
 # Start from the official Golang base image
 FROM golang:1.22-alpine as builder
 
-# Add Maintainer info
-LABEL maintainer="Your Name <your.email@example.com>"
-
 # Set the Current Working Directory inside the container
 WORKDIR /app
 
@@ -22,7 +19,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd
 ######## Start a new stage from scratch #######
 FROM alpine:latest  
 
-RUN apk --no-cache add ca-certificates
+# Install curl and ca-certificates
+RUN apk --no-cache add curl ca-certificates
 
 WORKDIR /root/
 
@@ -33,4 +31,4 @@ COPY --from=builder /app/main .
 EXPOSE 8080
 
 # Command to run the executable
-CMD ["./main"] 
+CMD ["./main"]

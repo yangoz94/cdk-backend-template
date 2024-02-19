@@ -90,13 +90,6 @@ export class OgiECSFargate extends Construct {
       }
     );
 
-    // // create security group
-    // const clusterSecurityGroup = this.cluster.connections;
-    // clusterSecurityGroup.allowFrom(
-    //   ec2.Peer.anyIpv4(),
-    //   ec2.Port.tcp(443),
-    //   "Allow inbound HTTPS traffic"
-    // );
 
     // create a new Fargate Task Definition
     this.taskDefinition = new FargateTaskDefinition(
@@ -139,6 +132,13 @@ export class OgiECSFargate extends Construct {
             hostPort: 443,
           },
         ],
+        healthCheck: {
+          command: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"],
+          interval: Duration.seconds(5),
+          timeout: Duration.seconds(4),
+          retries: 2,
+          startPeriod: Duration.seconds(10),
+        },
         environment: props.environmentVariables,
       }
     );
@@ -150,37 +150,25 @@ export class OgiECSFargate extends Construct {
       `${props.appName}-${props.serviceName}-service`,
       {
         cluster: this.cluster,
-        taskDefinition: this.taskDefinition,
+        domainName: DOMAIN,
+        domainZone: hostedZone,
+        listenerPort: 443,
+        loadBalancerName: `${props.serviceName}-lb`,
+        publicLoadBalancer: true,
+        protocol: ApplicationProtocol.HTTPS,
+        redirectHTTP: true,
         serviceName: `${props.appName}-${props.serviceName}-service`,
         desiredCount: 1,
         certificate: certificate,
-        domainName: DOMAIN,
-        domainZone: hostedZone,
         assignPublicIp: true,
         maxHealthyPercent: 100,
         minHealthyPercent: 0,
-        publicLoadBalancer: true,
         platformVersion: FargatePlatformVersion.LATEST,
-        loadBalancerName: `${props.serviceName}-lb`,
-        listenerPort: 443,
-        protocol: ApplicationProtocol.HTTPS,
-        redirectHTTP: true,
+        taskDefinition: this.taskDefinition,
       }
     )
 
     this.lb = this.service.loadBalancer;
-
-    this.service.node.addDependency(this.lb);
-
-    this.service.targetGroup.configureHealthCheck({
-      path: "/health",
-      protocol: Protocol.HTTPS,
-      port: "443",
-      healthyThresholdCount: 2,
-      unhealthyThresholdCount: 2,
-      interval: Duration.seconds(5),
-      timeout: Duration.seconds(4),
-    });
 
 
     // setup AutoScaling policy
