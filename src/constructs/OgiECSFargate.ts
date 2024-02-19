@@ -142,7 +142,7 @@ export class OgiECSFargate extends Construct {
         listenerPort: 443,
         loadBalancerName: `${props.serviceName}-lb`,
         publicLoadBalancer: true,
-        protocol: ApplicationProtocol.HTTP,
+        protocol: ApplicationProtocol.HTTPS,
         redirectHTTP: true,
         serviceName: `${props.appName}-${props.serviceName}-service`,
         desiredCount: 1,
