@@ -11,7 +11,9 @@ func main() {
 	r := chi.NewRouter()
 
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello, world!"))
+		fmt.Println("Health check successful")
+		//return 200
+		w.WriteHeader(http.StatusOK)
 	})
 
 	fmt.Println("Server is running on port 8080")

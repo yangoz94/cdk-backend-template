@@ -22,13 +22,10 @@ import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { HostedZone } from "aws-cdk-lib/aws-route53";
 import { Construct } from "constructs";
 import path = require("path");
-import * as ec2 from "aws-cdk-lib/aws-ec2";
 import { Duration } from "aws-cdk-lib";
 import {
   ApplicationLoadBalancer,
   ApplicationProtocol,
-  ListenerAction,
-  Protocol,
 } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 
 export interface OgiECSFargateProps {
@@ -50,17 +47,8 @@ export class OgiECSFargate extends Construct {
 
   constructor(scope: Construct, id: string, props: OgiECSFargateProps) {
     super(scope, id);
-
-    // // create a new Hosted Zone
-    // const hostedZone = new HostedZone(
-    //   this,
-    //   `${props.appName}-${props.serviceName}-hosted-zone`,
-    //   {
-    //     zoneName: props.subdomain + "." + props.domainName,
-    //   }
-    // );
-
     const DOMAIN = `${props.subdomain}.${props.domainName}`
+
     // Look up the existing Hosted Zone (Domain is on Google Domains NOT on Route53. Route 53 hosted zone was created manually and DNS records were added to Google Domains)
     const hostedZone = HostedZone.fromLookup(
       this,
@@ -128,12 +116,11 @@ export class OgiECSFargate extends Construct {
         }),
         portMappings: [
           {
-            containerPort: 443,
-            hostPort: 443,
+            containerPort: 8080,
           },
         ],
         healthCheck: {
-          command: ["CMD-SHELL", "curl -f https://localhost:443/health || exit 1"],
+          command: ["CMD-SHELL", `curl -f http://localhost:8080/health} || exit 1`],
           interval: Duration.seconds(5),
           timeout: Duration.seconds(4),
           retries: 2,
