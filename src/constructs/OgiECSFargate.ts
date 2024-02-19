@@ -156,17 +156,6 @@ export class OgiECSFargate extends Construct {
       }
     )
 
-     // Redirect HTTP to HTTPS
-     this.service.loadBalancer.addListener("HttpToHttpsRedirect", {
-      protocol: ApplicationProtocol.HTTP,
-      port: 80,
-      defaultAction: ListenerAction.redirect({
-        protocol: ApplicationProtocol.HTTPS,
-        port: "443",
-      }),
-    });
-
-
     // load balancer health check
     this.service.targetGroup.configureHealthCheck({
       path: "/health",
