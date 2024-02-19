@@ -116,7 +116,7 @@ export class OgiECSFargate extends Construct {
         }),
         portMappings: [
           {
-            containerPort: 8080,
+            containerPort: 80,
           },
         ],
         healthCheck: {
@@ -156,6 +156,15 @@ export class OgiECSFargate extends Construct {
     )
 
     this.lb = this.service.loadBalancer;
+
+
+    this.service.targetGroup.configureHealthCheck({
+      path: "/health",
+      port: "80",
+
+      // healthyThresholdCount: 1,
+      // unhealthyThresholdCount: 1,
+    });
 
     // setup AutoScaling policy
     if (props.enableAutoScaling) {
