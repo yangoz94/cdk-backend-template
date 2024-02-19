@@ -120,7 +120,7 @@ export class OgiECSFargate extends Construct {
           },
         ],
         healthCheck: {
-          command: ["CMD-SHELL", `curl -f http://localhost:8080/health} || exit 1`],
+          command: ["CMD-SHELL", `curl -f http://localhost:80/health || exit 1`],
           interval: Duration.seconds(5),
           timeout: Duration.seconds(4),
           retries: 2,
@@ -142,7 +142,7 @@ export class OgiECSFargate extends Construct {
         listenerPort: 443,
         loadBalancerName: `${props.serviceName}-lb`,
         publicLoadBalancer: true,
-        protocol: ApplicationProtocol.HTTPS,
+        protocol: ApplicationProtocol.HTTP,
         redirectHTTP: true,
         serviceName: `${props.appName}-${props.serviceName}-service`,
         desiredCount: 1,
