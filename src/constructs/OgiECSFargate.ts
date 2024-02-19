@@ -57,12 +57,13 @@ export class OgiECSFargate extends Construct {
     //   }
     // );
 
+    const DOMAIN = `${props.subdomain}.${props.domainName}`
     // Look up the existing Hosted Zone (Domain is on Google Domains NOT on Route53. Route 53 hosted zone was created manually and DNS records were added to Google Domains)
     const hostedZone = HostedZone.fromLookup(
       this,
       `${props.appName}-${props.serviceName}-hosted-zone`,
       {
-        domainName: props.subdomain + "." + props.domainName,
+        domainName: DOMAIN,
       }
     );
 
@@ -71,7 +72,7 @@ export class OgiECSFargate extends Construct {
       this,
       `${props.appName}-${props.serviceName}-certificate`,
       {
-        domainName: props.subdomain + "." + props.domainName,
+        domainName: DOMAIN,
         validation: CertificateValidation.fromDns(hostedZone),
       }
     );
@@ -149,13 +150,17 @@ export class OgiECSFargate extends Construct {
         serviceName: `${props.appName}-${props.serviceName}-service`,
         desiredCount: 1,
         certificate: certificate,
-        domainName: props.domainName,
+        domainName: DOMAIN,
         domainZone: hostedZone,
         assignPublicIp: true,
         maxHealthyPercent: 100,
         minHealthyPercent: 0,
         publicLoadBalancer: true,
         platformVersion: FargatePlatformVersion.LATEST,
+        loadBalancerName: `${props.appName}-${props.serviceName}-lb`,
+        listenerPort: 443,
+        protocol: ApplicationProtocol.HTTPS,
+        redirectHTTP: true,
       }
     );
 
@@ -187,14 +192,5 @@ export class OgiECSFargate extends Construct {
       }),
     });
 
-    // Redirect HTTP to HTTPS
-    this.service.loadBalancer.addListener("HttpToHttpsRedirect", {
-      protocol: ApplicationProtocol.HTTP,
-      port: 80,
-      defaultAction: ListenerAction.redirect({
-        protocol: ApplicationProtocol.HTTPS,
-        port: "443",
-      }),
-    });
   }
 }
