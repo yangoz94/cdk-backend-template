@@ -26,6 +26,7 @@ import { Duration } from "aws-cdk-lib";
 import {
   ApplicationLoadBalancer,
   ApplicationProtocol,
+  ListenerAction,
 } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 
 export interface OgiECSFargateProps {
@@ -121,8 +122,8 @@ export class OgiECSFargate extends Construct {
         ],
         healthCheck: {
           command: ["CMD-SHELL", `curl -f http://localhost:80/health || exit 1`],
-          interval: Duration.seconds(5),
-          timeout: Duration.seconds(4),
+          interval: Duration.minutes(30),
+          timeout: Duration.seconds(5),
           retries: 2,
           startPeriod: Duration.seconds(10),
         },
@@ -155,11 +156,22 @@ export class OgiECSFargate extends Construct {
       }
     )
 
+     // Redirect HTTP to HTTPS
+     this.service.loadBalancer.addListener("HttpToHttpsRedirect", {
+      protocol: ApplicationProtocol.HTTP,
+      port: 80,
+      defaultAction: ListenerAction.redirect({
+        protocol: ApplicationProtocol.HTTPS,
+        port: "443",
+      }),
+    });
+
 
     // load balancer health check
     this.service.targetGroup.configureHealthCheck({
       path: "/health",
       port: "80",
+      interval: Duration.minutes(30),
     });
 
     // setup AutoScaling policy
