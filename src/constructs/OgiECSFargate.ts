@@ -2,7 +2,7 @@ import {
   Certificate,
   CertificateValidation,
 } from "aws-cdk-lib/aws-certificatemanager";
-import { IVpc } from "aws-cdk-lib/aws-ec2";
+import { IVpc, Protocol } from "aws-cdk-lib/aws-ec2";
 import { Platform } from "aws-cdk-lib/aws-ecr-assets";
 import {
   AwsLogDriver,
@@ -156,7 +156,6 @@ export class OgiECSFargate extends Construct {
     )
 
     this.lb = this.service.loadBalancer;
-
 
     // setup AutoScaling policy
     if (props.enableAutoScaling) {

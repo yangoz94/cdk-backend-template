@@ -10,6 +10,12 @@ import (
 func main() {
 	r := chi.NewRouter()
 
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("Test Request received")
+		//return 200
+		w.WriteHeader(http.StatusOK)
+	})
+
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Health check successful")
 		//return 200

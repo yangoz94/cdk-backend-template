@@ -1,4 +1,4 @@
-module main
+module github.com/yangoz94/cdk-backend-template/src/containers/go-web-server
 
 go 1.21.4
 
