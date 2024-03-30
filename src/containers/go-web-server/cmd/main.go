@@ -3,23 +3,21 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"web-server/internal/controller"
 
 	"github.com/go-chi/chi"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
 	r := chi.NewRouter()
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Test Request received")
-		//return 200
-		w.WriteHeader(http.StatusOK)
-	})
+	c := controller.New()
+
+	r.Get("/", c.SayHelloAsAnExampleFunction)
 
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Health check successful")
-		//return 200
-		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
 	})
 
 	fmt.Println("Server is running on port 80")

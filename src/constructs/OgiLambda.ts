@@ -17,16 +17,16 @@ export enum Permission {
 }
 
 export interface OgiLambdaProps extends Omit<lambda.FunctionProps, 'runtime' | 'handler' | 'code'> {
+  appName: string;
   lambdaName: string;
-  vpc: ec2.IVpc;
   permissions?: string[];
   runtime?: lambda.Runtime;
   handler?: string;
   nodeModules?: string[];
   externalModules?: string[];
   allowApiGatewayInvoke?: boolean;
-  vpcSubnets: ec2.SubnetSelection
-  appName: string;
+  vpc: ec2.IVpc;
+  vpcSubnets?: ec2.SubnetSelection
 }
 
 export class OgiLambda extends Construct {
@@ -53,7 +53,7 @@ export class OgiLambda extends Construct {
       vpcSubnets: props.vpcSubnets,
       runtime: props.runtime || lambda.Runtime.NODEJS_18_X,
       handler: props.handler || "index.handler",
-      entry: path.join(__dirname, `../lambdas/${props.lambdaName}/index.ts`),
+      entry: path.join(__dirname, `../lambdas/${props.lambdaName}.ts`),
       bundling: {
         sourceMap: false,
         nodeModules: props.nodeModules || [],

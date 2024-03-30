@@ -1,10 +1,14 @@
-import { IVpc } from "aws-cdk-lib/aws-ec2";
+import {
+  Certificate,
+  CertificateValidation,
+} from "aws-cdk-lib/aws-certificatemanager";
+import { IVpc, Protocol } from "aws-cdk-lib/aws-ec2";
 import { Platform } from "aws-cdk-lib/aws-ecr-assets";
 import {
   AwsLogDriver,
   ContainerImage,
   CpuArchitecture,
-  FargateService,
+  FargatePlatformVersion,
 } from "aws-cdk-lib/aws-ecs";
 import {
   Cluster,
@@ -12,37 +16,70 @@ import {
   ICluster,
   OperatingSystemFamily,
 } from "aws-cdk-lib/aws-ecs";
+import { ApplicationLoadBalancedFargateService } from "aws-cdk-lib/aws-ecs-patterns";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
+import { HostedZone } from "aws-cdk-lib/aws-route53";
 import { Construct } from "constructs";
 import path = require("path");
 import { Duration } from "aws-cdk-lib";
+import {
+  ApplicationLoadBalancer,
+  ApplicationProtocol,
+} from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import { ITable } from "aws-cdk-lib/aws-dynamodb";
 
-export interface OgiECSFargateProps {
+export interface OgilLoadBalancedECSFargateProps {
   appName: string;
-  includeHTTPSCertificate: boolean;
   serviceName: string;
   vpc: IVpc;
+  domainName: string;
+  subdomain: string;
   environmentVariables: { [key: string]: string };
   imagePathRelativeToRoot?: string;
   enableAutoScaling?: boolean;
   ddbTable?: ITable;
 }
 
-export class OgiECSFargate extends Construct {
+export class OgilLoadBalancedECSFargate extends Construct {
   public readonly cluster: ICluster;
   public readonly taskDefinition: FargateTaskDefinition;
-  public readonly service: FargateService;
+  public readonly service: ApplicationLoadBalancedFargateService;
+  public readonly lb: ApplicationLoadBalancer;
 
-  constructor(scope: Construct, id: string, props: OgiECSFargateProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: OgilLoadBalancedECSFargateProps
+  ) {
     super(scope, id);
+
+    const DOMAIN = `${props.subdomain}.${props.domainName}`;
+
+    // Look up the existing Hosted Zone (Domain is on Google Domains NOT on Route53. Route 53 hosted zone was created manually and DNS records were added to Google Domains)
+    const hostedZone = HostedZone.fromLookup(
+      this,
+      `${props.appName}-${props.serviceName}-hosted-zone`,
+      {
+        domainName: DOMAIN,
+      }
+    );
+
+    // create a new Certificate for the https
+    const certificate = new Certificate(
+      this,
+      `${props.appName}-${props.serviceName}-certificate`,
+      {
+        domainName: DOMAIN,
+        validation: CertificateValidation.fromDns(hostedZone),
+      }
+    );
 
     // create a new ECS Cluster
     this.cluster = new Cluster(
       this,
       `${props.appName}-${props.serviceName}-cluster`,
       {
-        // vpc: props.vpc, use default vpc
+        vpc: props.vpc,
         clusterName: `${props.appName}-${props.serviceName}-cluster`,
       }
     );
@@ -102,18 +139,47 @@ export class OgiECSFargate extends Construct {
     );
 
     // create a new Fargate Service
-    this.service = new FargateService(
+    this.service = new ApplicationLoadBalancedFargateService(
       this,
       `${props.appName}-${props.serviceName}-service`,
       {
         cluster: this.cluster,
+        domainName: DOMAIN,
+        domainZone: hostedZone,
+        listenerPort: 443,
+        loadBalancerName: `${props.serviceName}-lb`,
+        publicLoadBalancer: true,
+        protocol: ApplicationProtocol.HTTPS,
+        redirectHTTP: true,
         serviceName: `${props.appName}-${props.serviceName}-service`,
         desiredCount: 1,
-
+        certificate: certificate,
+        assignPublicIp: true,
         maxHealthyPercent: 100,
         minHealthyPercent: 0,
+        platformVersion: FargatePlatformVersion.LATEST,
         taskDefinition: this.taskDefinition,
       }
     );
+
+    // load balancer health check
+    this.service.targetGroup.configureHealthCheck({
+      path: "/health",
+      port: "80",
+      interval: Duration.seconds(300),
+    });
+
+    // setup AutoScaling policy
+    if (props.enableAutoScaling) {
+      const scaling = this.service.service.autoScaleTaskCount({
+        maxCapacity: 2,
+      });
+
+      scaling.scaleOnCpuUtilization("CpuScaling", {
+        targetUtilizationPercent: 80,
+        scaleInCooldown: Duration.seconds(60),
+        scaleOutCooldown: Duration.seconds(60),
+      });
+    }
   }
 }

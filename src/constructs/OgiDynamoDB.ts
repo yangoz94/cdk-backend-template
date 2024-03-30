@@ -51,7 +51,9 @@ export class OgiDynamoDB extends Construct {
         name: props.sortKey,
         type: cdk.aws_dynamodb.AttributeType.STRING,
       },
-      removalPolicy: cdk.RemovalPolicy.DESTROY, // adjust as needed
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      dynamoStream: cdk.aws_dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
+      pointInTimeRecovery: false,
     });
 
     // Add GSIs

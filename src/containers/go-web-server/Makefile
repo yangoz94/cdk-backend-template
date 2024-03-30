@@ -1,27 +1,39 @@
 # Name of the Docker image
 IMAGE_NAME = $(shell basename `pwd`)
 
-# Dockerfile location
-DOCKERFILE = Dockerfile.$(IMAGE_NAME)
-
 # Container name
 CONTAINER_NAME = $(IMAGE_NAME)-container
+
+# Dockerfile location
+DOCKERFILE = Dockerfile.$(IMAGE_NAME)
 
 # Port mapping
 PORT = 8080
 
-build:
-	docker build -t $(IMAGE_NAME) -f $(DOCKERFILE) .
-	make run
+# .env file
+ENV_FILE =.env
 
+# Runs the tests in the code from the root directory
+test:
+	go test -v ./...
+
+# Simply runs go run cmd/main.go without any Docker
 run:
-	docker run --name $(CONTAINER_NAME) -p $(PORT):$(PORT) $(IMAGE_NAME)
+	@go run cmd/main.go
 
-stop:
-	docker stop $(CONTAINER_NAME)
-	docker rm $(CONTAINER_NAME)
+# Deletes the bin directory(if exists) and builds the binary executable of the code
+build:
+	@rm -rf bin
+	@go build -o bin/main cmd/main.go
 
-clean: stop
-	docker rm $(CONTAINER_NAME)
+# Builds a Docker image of the code 
+docker.build:
+	@docker build -t $(IMAGE_NAME) -f $(DOCKERFILE) .
 
-rebuild: clean build run
+# Runs the Docker image in a container
+docker.run:
+	@if [ -f $(ENV_FILE) ]; then \
+		docker run -it --rm --name $(CONTAINER_NAME) -p $(PORT):$(PORT) --env-file $(ENV_FILE) $(IMAGE_NAME); \
+	else \
+		docker run -it --rm --name $(CONTAINER_NAME) -p $(PORT):$(PORT) $(IMAGE_NAME); \
+	fi
