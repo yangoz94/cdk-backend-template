@@ -1,22 +1,23 @@
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { Construct } from 'constructs';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
-import path = require('path');
+import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as ec2 from "aws-cdk-lib/aws-ec2";
+import { Construct } from "constructs";
+import * as iam from "aws-cdk-lib/aws-iam";
+import * as nodejs from "aws-cdk-lib/aws-lambda-nodejs";
+import path = require("path");
 
 export enum Permission {
-  S3 = 's3',
-  DynamoDB = 'dynamodb',
-  RDS = 'rds',
-  APIGateway = 'apigateway',
-  Events = 'events',
-  EC2 = 'ec2',
-  ECS = 'ecs',
-  SQS = 'sqs'
+  S3 = "s3",
+  DynamoDB = "dynamodb",
+  RDS = "rds",
+  APIGateway = "apigateway",
+  Events = "events",
+  EC2 = "ec2",
+  ECS = "ecs",
+  SQS = "sqs",
 }
 
-export interface OgiLambdaProps extends Omit<lambda.FunctionProps, 'runtime' | 'handler' | 'code'> {
+export interface OgiLambdaProps
+  extends Omit<lambda.FunctionProps, "runtime" | "handler" | "code"> {
   appName: string;
   lambdaName: string;
   permissions?: string[];
@@ -26,7 +27,7 @@ export interface OgiLambdaProps extends Omit<lambda.FunctionProps, 'runtime' | '
   externalModules?: string[];
   allowApiGatewayInvoke?: boolean;
   vpc: ec2.IVpc;
-  vpcSubnets?: ec2.SubnetSelection
+  vpcSubnets?: ec2.SubnetSelection;
 }
 
 export class OgiLambda extends Construct {
@@ -59,13 +60,13 @@ export class OgiLambda extends Construct {
         nodeModules: props.nodeModules || [],
         externalModules: props.externalModules || ["@aws-sdk/*", "aws-lambda"],
       },
-
     });
 
     // Add permission for API Gateway to invoke this Lambda function by default
-    if (props.allowApiGatewayInvoke !== false) { // If not explicitly set to false
-      this.lambdaFunction.addPermission('ApiGatewayInvoke', {
-        principal: new iam.ServicePrincipal('apigateway.amazonaws.com'),
+    if (props.allowApiGatewayInvoke !== false) {
+      // If not explicitly set to false
+      this.lambdaFunction.addPermission("ApiGatewayInvoke", {
+        principal: new iam.ServicePrincipal("apigateway.amazonaws.com"),
       });
     }
 
