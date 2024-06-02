@@ -1,8 +1,9 @@
 {
-  "name": "OgiBackend",
+  "name": "serverlesstemplate",
   "version": "0.1.0",
   "bin": {
-    "OgiBackend": "bin/OgiBackend.ts"
+    "ogibackendtemplate": "bin/ogibackendtemplate.ts",
+    "serverlesstemplate": "bin/serverlesstemplate.ts"
   },
   "scripts": {
     "build": "npx tsc",

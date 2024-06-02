@@ -19,7 +19,7 @@ export class MainStack extends cdk.Stack {
     /* Infrastructure Stack */
     const infrastructureStack = new InfrastructureStack(
       this,
-      "InfrastructureStack",
+      `${props.appName}-infrastructure-stack`,
       {
         appName: props.appName,
         region: props.region,
@@ -27,13 +27,17 @@ export class MainStack extends cdk.Stack {
     );
 
     /* Backend Stack */
-    const backendStack = new BackendStack(this, "BackendStack", {
-      appName: props.appName,
-      ddbTable: infrastructureStack.table,
-      vpc: infrastructureStack.vpc,
-      domainName: props.domainName,
-      apiGwApiKey: props.apiGatewayApiKey,
-    });
+    const backendStack = new BackendStack(
+      this,
+      `${props.appName}-backend-stack`,
+      {
+        appName: props.appName,
+        ddbTable: infrastructureStack.table,
+        vpc: infrastructureStack.vpc,
+        domainName: props.domainName,
+        apiGwApiKey: props.apiGatewayApiKey,
+      }
+    );
     /* Ensure that the BackendStack is created after the InfrastructureStack */
     backendStack.addDependency;
 

@@ -78,7 +78,9 @@ function updatePackageJson(newName: string, oldName: string) {
     let packageJson = JSON.parse(
       fs.readFileSync(packageJsonPath, { encoding: "utf-8" })
     );
-    packageJson.name = newName;
+    // Convert the new name to lowercase and replace spaces with hyphens
+    const formattedName = newName.toLowerCase().replace(/\s+/g, "-");
+    packageJson.name = formattedName;
     if (packageJson.bin) {
       const binKeys = Object.keys(packageJson.bin);
       binKeys.forEach((key) => {
@@ -86,7 +88,7 @@ function updatePackageJson(newName: string, oldName: string) {
           delete packageJson.bin[key];
         }
       });
-      packageJson.bin[newName] = `bin/${newName}.ts`;
+      packageJson.bin[formattedName] = `bin/${formattedName}.ts`;
     }
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
     console.log(`Successfully updated ${packageJsonPath} with the new name`);
