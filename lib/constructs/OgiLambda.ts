@@ -3,7 +3,8 @@ import * as ec2 from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as nodejs from "aws-cdk-lib/aws-lambda-nodejs";
-import path = require("path");
+import * as path from "path";
+import { OutputFormat } from "aws-cdk-lib/aws-lambda-nodejs";
 
 export enum Permission {
   S3 = "s3",
@@ -53,12 +54,14 @@ export class OgiLambda extends Construct {
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
       runtime: props.runtime || lambda.Runtime.NODEJS_18_X,
+      architecture: lambda.Architecture.ARM_64,
       handler: props.handler || "index.handler",
-      entry: path.join(__dirname, `../lambdas/${props.lambdaName}.ts`),
+      entry: path.join(__dirname, `../../src/lambdas/${props.lambdaName}.ts`),
       bundling: {
         sourceMap: false,
         nodeModules: props.nodeModules || [],
         externalModules: props.externalModules || ["@aws-sdk/*", "aws-lambda"],
+        format: OutputFormat.ESM,
       },
     });
 

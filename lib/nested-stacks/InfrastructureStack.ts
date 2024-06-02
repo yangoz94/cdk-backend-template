@@ -1,7 +1,7 @@
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
-import { OgiVpc } from "../src/constructs/OgiVpc";
-import { OgiDynamoDB } from "../src/constructs/OgiDynamoDB";
+import { OgiVpc } from "../constructs/OgiVpc";
+import { OgiDynamoDB } from "../constructs/OgiDynamoDB";
 
 export interface InfrastructureStackProps extends cdk.NestedStackProps {
   appName: string;

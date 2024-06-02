@@ -122,8 +122,7 @@ function updatePackageJson(newName: string, oldName: string) {
       );
       console.log(`Successfully updated ${packageLockPath} with the new name`);
     } catch (err) {
-      console.error(
-      );
+      console.error();
     }
   } else {
     console.log(`${packageLockPath} does not exist`);

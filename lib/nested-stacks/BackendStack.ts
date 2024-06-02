@@ -1,8 +1,8 @@
 import * as cdk from "aws-cdk-lib";
 import { IVpc } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
-import { OgiLambda, OgiLambdaProps } from "../src/constructs/OgiLambda";
-import { OgilLoadBalancedECSFargate } from "../src/constructs/OgilLoadBalancedECSFargate";
+import { OgiLambda, OgiLambdaProps } from "../constructs/OgiLambda";
+import { OgilLoadBalancedECSFargate } from "../constructs/OgilLoadBalancedECSFargate";
 import { ITable } from "aws-cdk-lib/aws-dynamodb";
 
 export interface BackendStackProps extends cdk.NestedStackProps {
