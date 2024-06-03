@@ -34,6 +34,7 @@ export interface OgilLoadBalancedECSFargateProps {
   vpc: IVpc;
   domainName: string;
   subdomain: string;
+  useSpotInstances: boolean;
   environmentVariables: { [key: string]: string };
   imagePathRelativeToRoot?: string;
   enableAutoScaling?: boolean;
@@ -177,6 +178,18 @@ export class OgilLoadBalancedECSFargate extends Construct {
         minHealthyPercent: 0,
         platformVersion: FargatePlatformVersion.LATEST,
         taskDefinition: this.taskDefinition,
+        capacityProviderStrategies: [
+          {
+            capacityProvider: "FARGATE_SPOT",
+            base: props.useSpotInstances ? 1 : 0,
+            weight: 1,
+          },
+          {
+            capacityProvider: "FARGATE",
+            base: props.useSpotInstances ? 0 : 1,
+            weight: 1,
+          },
+        ],
       }
     );
 
