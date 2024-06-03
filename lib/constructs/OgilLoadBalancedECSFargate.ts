@@ -35,9 +35,10 @@ export interface OgilLoadBalancedECSFargateProps {
   vpc: IVpc;
   domainName: string;
   subdomain: string;
-  useSpotInstances: boolean;
   environmentVariables: { [key: string]: string };
   imagePathRelativeToRoot?: string;
+  useSpotInstances?: boolean;
+  assignPublicIp?: boolean;
   enableAutoScaling?: boolean;
   ddbTables?: ITable[];
 }
@@ -175,7 +176,7 @@ export class OgilLoadBalancedECSFargate extends Construct {
         serviceName: `${props.appName}-${props.serviceName}-service`,
         desiredCount: 1,
         certificate: certificate,
-        assignPublicIp: false,
+        assignPublicIp: props.assignPublicIp ? true : false,
         maxHealthyPercent: 100,
         minHealthyPercent: 0,
         platformVersion: FargatePlatformVersion.LATEST,
