@@ -19,7 +19,7 @@ export class InfrastructureStack extends cdk.NestedStack {
     // this.vpc = new OgiVpc(this, `${props.appName}-vpc`, {
     //   vpcName: `${props.appName}-vpc`,
     //   vpcEndpoints: ["dynamodb", "apigateway"],
-    //   natGateways: 0, // set to 1 or more if you want your lambda to access the internet outside the VPC
+    //   natGateways: 0, // set to 1 or more if you want your lambda to access the internet outside the VPC. Note that this will incur additional costs
     // }).vpc;
 
     // If you want to use the default VPC, you can use the following code:

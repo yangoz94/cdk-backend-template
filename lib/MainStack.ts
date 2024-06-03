@@ -33,7 +33,6 @@ export class MainStack extends cdk.Stack {
         ddbTable: infrastructureStack.table,
         vpc: infrastructureStack.vpc,
         domainName: props.domainName,
-        apiGwApiKey: props.apiGatewayApiKey,
       }
     );
     /* Ensure that the BackendStack is created after the InfrastructureStack */

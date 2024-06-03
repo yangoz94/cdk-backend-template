@@ -106,7 +106,7 @@ export class BackendStack extends cdk.NestedStack {
         subdomain: "api",
         serviceName: "go-web-server",
         vpc: props.vpc,
-        ddbTable: props.ddbTable,
+        ddbTables: [props.ddbTable],
         environmentVariables: {
           APP_NAME: props.appName,
           TABLE_NAME: props.ddbTable.tableName,

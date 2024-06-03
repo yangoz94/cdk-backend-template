@@ -10,7 +10,8 @@
     "test": "npx jest",
     "cdk": "npx cdk",
     "rename": "npx ts-node scripts/rename.ts",
-    "synth": "npx ts-node scripts/checkEnv.ts && npx dotenv-cli npx cdk synth"
+    "synth": "npx ts-node scripts/checkEnv.ts && npx dotenv-cli npx cdk synth",
+    "update-dependencies": "npm outdated && npm update"
   },
   "devDependencies": {
     "@types/jest": "^29.5.5",
