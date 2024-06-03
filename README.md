@@ -1,5 +1,10 @@
 # Instructions for Initial Setup and Deployment via CI/CD
 
+## Prerequisites ##
+- AWS account and a good understanding of AWS services and billing/cost management  
+- Nodejs/npm installation  
+- aws-cdk installation  
+
 ## Local Setup ##
 1. Clone the repository using HTTPS to your computer.  
 
@@ -47,7 +52,6 @@ Your secrets and variables should look like this;
 - to any nested stack as a prop that will inherit the env variable from the parent stack 
 
 In addition, for your local development, you will also need to update your `.env` and `.env.example` for consistency.  
-
 
 4. Now, you can either directly push or make a PR to your `develop` or `main` branches(create them if you don't have them) and the deployment will execute automatically on condition that you followed all the steps carefully.  Your deployment status can be tracked in the `actions` tab of your github repository.  
 
