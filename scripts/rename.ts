@@ -82,13 +82,10 @@ function updatePackageJson(newName: string, oldName: string) {
     const formattedName = newName.toLowerCase().replace(/\s+/g, "-");
     packageJson.name = formattedName;
     if (packageJson.bin) {
-      const binKeys = Object.keys(packageJson.bin);
-      binKeys.forEach((key) => {
-        if (key === oldName) {
-          delete packageJson.bin[key];
-        }
-      });
-      packageJson.bin[formattedName] = `bin/${formattedName}.ts`;
+      // Clear the bin object
+      packageJson.bin = {};
+      // Add the new entry
+      packageJson.bin[newName] = `bin/${newName}.ts`;
     }
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
     console.log(`Successfully updated ${packageJsonPath} with the new name`);
@@ -124,7 +121,9 @@ function updatePackageJson(newName: string, oldName: string) {
       );
       console.log(`Successfully updated ${packageLockPath} with the new name`);
     } catch (err) {
-      console.error();
+      console.error(
+        `Error updating ${packageLockPath} with the new name: ${err}`
+      );
     }
   } else {
     console.log(`${packageLockPath} does not exist`);

@@ -6,8 +6,6 @@ import { BackendStack } from "./nested-stacks/BackendStack";
 
 export interface MainStackProps extends StackProps {
   appName: string;
-  region: string;
-  accountId: string;
   domainName: string;
   apiGatewayApiKey?: string;
 }
@@ -22,7 +20,7 @@ export class MainStack extends cdk.Stack {
       `${props.appName}-infrastructure-stack`,
       {
         appName: props.appName,
-        region: props.region,
+        region: props.env?.region as string,
       }
     );
 
@@ -39,8 +37,8 @@ export class MainStack extends cdk.Stack {
       }
     );
     /* Ensure that the BackendStack is created after the InfrastructureStack */
-    backendStack.addDependency;
+    backendStack.addDependency(infrastructureStack);
 
-    // add more stacks here if needed
+    // TO-DO: Add more stacks here as the application grows
   }
 }

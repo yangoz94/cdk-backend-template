@@ -1,9 +1,8 @@
 {
-  "name": "serverlesstemplate",
+  "name": "cdkserverlesstemplate",
   "version": "0.1.0",
   "bin": {
-    "ogibackendtemplate": "bin/ogibackendtemplate.ts",
-    "serverlesstemplate": "bin/serverlesstemplate.ts"
+    "CDKServerlessTemplate": "bin/CDKServerlessTemplate.ts"
   },
   "scripts": {
     "build": "npx tsc",

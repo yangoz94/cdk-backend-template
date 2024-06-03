@@ -1,5 +1,5 @@
 {
-  "app": "npx ts-node --prefer-ts-exts bin/ServerlessTemplate.ts",
+  "app": "npx ts-node --prefer-ts-exts bin/CDKServerlessTemplate.ts",
   "watch": {
     "include": [
       "**"

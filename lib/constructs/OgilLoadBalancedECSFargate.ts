@@ -20,7 +20,7 @@ import { ApplicationLoadBalancedFargateService } from "aws-cdk-lib/aws-ecs-patte
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { HostedZone } from "aws-cdk-lib/aws-route53";
 import { Construct } from "constructs";
-import path = require("path");
+import * as path from "path";
 import { Duration } from "aws-cdk-lib";
 import {
   ApplicationLoadBalancer,

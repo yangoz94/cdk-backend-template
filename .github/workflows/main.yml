@@ -25,7 +25,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ vars.AWS_REGION }}
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v2
       - name: Setup Docker Buildx
@@ -41,13 +41,10 @@ jobs:
           cdk synth
           cdk deploy --verbose --require-approval never
         env:
-          API_KEY: ${{ secrets.API_KEY }}
-          APP_NAME: ${{ secrets.APP_NAME}}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
+          APP_NAME: ${{ vars.APP_NAME}}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+          DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
   deploy_main:
     name: deploy_main
     if: github.ref == 'refs/heads/main'
@@ -78,11 +75,8 @@ jobs:
           cdk synth
           cdk deploy --all --verbose --require-approval never
         env:
-          API_GATEWAY_API_KEY: ${{ secrets.API_GATEWAY_API_KEY }}
-          APP_NAME: ${{ secrets.APP_NAME}}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
+          APP_NAME: ${{ vars.APP_NAME}}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+          DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
           
