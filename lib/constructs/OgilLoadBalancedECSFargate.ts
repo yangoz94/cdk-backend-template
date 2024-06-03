@@ -150,7 +150,7 @@ export class OgilLoadBalancedECSFargate extends Construct {
             "CMD-SHELL",
             `curl -f http://localhost:80/health || exit 1`,
           ],
-          interval: Duration.seconds(300),
+          interval: Duration.seconds(30),
           timeout: Duration.seconds(5),
           retries: 2,
           startPeriod: Duration.seconds(10),
@@ -181,18 +181,12 @@ export class OgilLoadBalancedECSFargate extends Construct {
         minHealthyPercent: 0,
         platformVersion: FargatePlatformVersion.LATEST,
         taskDefinition: this.taskDefinition,
-        capacityProviderStrategies: [
-          {
-            capacityProvider: "FARGATE_SPOT",
-            base: props.useSpotInstances ? 1 : 0,
-            weight: 1,
-          },
-          {
-            capacityProvider: "FARGATE",
-            base: props.useSpotInstances ? 0 : 1,
-            weight: 1,
-          },
-        ],
+        capacityProviderStrategies: props.useSpotInstances
+          ? [
+              { capacityProvider: "FARGATE_SPOT", weight: 1 },
+              { capacityProvider: "FARGATE", weight: 0 },
+            ]
+          : [{ capacityProvider: "FARGATE", weight: 1 }],
       }
     );
 
