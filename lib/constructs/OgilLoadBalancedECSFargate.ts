@@ -6,6 +6,7 @@ import { IVpc, Protocol } from "aws-cdk-lib/aws-ec2";
 import { Platform } from "aws-cdk-lib/aws-ecr-assets";
 import {
   AwsLogDriver,
+  CfnCapacityProvider,
   ContainerImage,
   CpuArchitecture,
   FargatePlatformVersion,
@@ -82,6 +83,7 @@ export class OgilLoadBalancedECSFargate extends Construct {
       {
         vpc: props.vpc,
         clusterName: `${props.appName}-${props.serviceName}-cluster`,
+        enableFargateCapacityProviders: true,
       }
     );
 
@@ -173,7 +175,7 @@ export class OgilLoadBalancedECSFargate extends Construct {
         serviceName: `${props.appName}-${props.serviceName}-service`,
         desiredCount: 1,
         certificate: certificate,
-        assignPublicIp: true,
+        assignPublicIp: false,
         maxHealthyPercent: 100,
         minHealthyPercent: 0,
         platformVersion: FargatePlatformVersion.LATEST,
