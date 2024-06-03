@@ -2,6 +2,7 @@
 
 ## Prerequisites ##
 - AWS account and a good understanding of AWS services and billing/cost management  
+- AWS account OIDC role(recommended) OR IAM role credentials with necessary service permissions
 - Nodejs/npm installation  
 - aws-cdk installation  
 
@@ -27,7 +28,7 @@
 5. Your local project configuration is now set up. You can now create your NestedStacks in `lib/nested-stacks` and instantiate them in `lib/MainStack.ts`. For convenience, there are a bunch of constructs in `lib/constructs` folder for commonly used services. They are convenient wrappers and they can be modified/extended as desired based on application requirements and developer preferences.  
 
 
-(Optional): You can install aws-cdk globally and configure your aws cli credentials to use `cdk bootstrap`(only required once per aws account) && `cdk deploy` to deploy your code without CI/CD. However, note that this may require additional configuration depending on the complexity of your project(profiles, env variables etc) and using CI/CD for deployment is the recommended approach.  
+(Optional): You can install aws-cdk globally and configure your aws cli credentials to use `cdk bootstrap aws://ACCOUNT_ID/REGION`(only required once per aws account) && `cdk deploy` to deploy your code without CI/CD. However, note that this may require additional configuration depending on the complexity of your project(profiles, env variables etc) and using CI/CD for deployment is the recommended approach.  
 
 ## CI/CD Configuration and Deployment via Github Workflows/Actions
 
@@ -47,16 +48,13 @@ Your secrets and variables should look like this;
 <img width="801" alt="Screenshot 2024-06-02 at 8 03 47 PM" src="https://github.com/yangoz94/cdk-backend-template/assets/95255319/1e8d050e-0913-4ae6-bfa2-091df54c90ef">
 
 3. Remember that every time you need a new env variable, you need to add them to the following;  
-- to `env` field for each branch in `.github/workflow/main.yml` file  
+- to `env` field for each branch in `.github/workflows/main.yml` file  
 - to `bin/{your_app_name}.ts` file as a prop to introduce it to your main stack  
 - to any nested stack as a prop that will inherit the env variable from the parent stack 
 
 In addition, for your local development, you will also need to update your `.env` and `.env.example` for consistency.  
 
-4. Now, you can either directly push or make a PR to your `develop` or `main` branches(create them if you don't have them) and the deployment will execute automatically on condition that you followed all the steps carefully.  Your deployment status can be tracked in the `actions` tab of your github repository.  
+4. Now, you can either directly push or make a PR to your `develop` or `main` branches(create them if you don't have them) and the deployment will execute automatically on condition that you followed all the steps carefully.  Your deployment status can be tracked in the `actions` tab of your github repository.
 
-
-
-
-
+If this is your first time deploying a cdk stack to your aws account, you should run `cdk bootstrap aws://ACCOUNT_ID/REGION` to create the required resources before deployment.
 
