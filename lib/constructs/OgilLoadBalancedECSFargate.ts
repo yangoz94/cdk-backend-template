@@ -172,7 +172,7 @@ export class OgilLoadBalancedECSFargate extends Construct {
         serviceName: `${props.appName}-${props.serviceName}-service`,
         desiredCount: 1,
         certificate: certificate,
-        assignPublicIp: false,
+        assignPublicIp: true,
         maxHealthyPercent: 100,
         minHealthyPercent: 0,
         platformVersion: FargatePlatformVersion.LATEST,
