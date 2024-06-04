@@ -37,7 +37,6 @@ export interface OgilLoadBalancedECSFargateProps {
   subdomain: string;
   environmentVariables: { [key: string]: string };
   imagePathRelativeToRoot?: string;
-  useSpotInstances?: boolean;
   assignPublicIp?: boolean;
   enableAutoScaling?: boolean;
   ddbTables?: ITable[];
@@ -181,12 +180,6 @@ export class OgilLoadBalancedECSFargate extends Construct {
         minHealthyPercent: 0,
         platformVersion: FargatePlatformVersion.LATEST,
         taskDefinition: this.taskDefinition,
-        capacityProviderStrategies: props.useSpotInstances
-          ? [
-              { capacityProvider: "FARGATE_SPOT", weight: 1 },
-              { capacityProvider: "FARGATE", weight: 0 },
-            ]
-          : [{ capacityProvider: "FARGATE", weight: 1 }],
       }
     );
 
@@ -194,7 +187,7 @@ export class OgilLoadBalancedECSFargate extends Construct {
     this.service.targetGroup.configureHealthCheck({
       path: "/health",
       port: "80",
-      interval: Duration.seconds(300),
+      interval: Duration.seconds(30),
     });
 
     /* Configure Auto Scaling based on CPU and Memory Utilization */
