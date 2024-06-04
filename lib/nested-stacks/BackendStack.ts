@@ -113,7 +113,7 @@ export class BackendStack extends cdk.NestedStack {
         },
         imagePathRelativeToRoot: "src/containers/go-web-server/",
         enableAutoScaling: false,
-        assignPublicIp: false,
+        assignPublicIp: true,
       }
     );
   }
