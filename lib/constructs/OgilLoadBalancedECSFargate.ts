@@ -64,7 +64,7 @@ export class OgilLoadBalancedECSFargate extends Construct {
       this,
       `${props.appName}-${props.serviceName}-hosted-zone`,
       {
-        domainName: DOMAIN,
+        domainName: props.domainName,
       }
     );
 
