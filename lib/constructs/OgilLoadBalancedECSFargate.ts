@@ -156,7 +156,10 @@ export class OgilLoadBalancedECSFargate extends Construct {
           retries: 2,
           startPeriod: Duration.seconds(10),
         },
-        environment: props.environmentVariables,
+        environment: {
+          CONTAINER_HTTP_PORT: `${CONTAINER_HTTP_PORT}`,
+          ...props.environmentVariables,
+        },
       }
     );
 

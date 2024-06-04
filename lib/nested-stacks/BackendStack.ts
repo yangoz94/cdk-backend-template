@@ -111,7 +111,6 @@ export class BackendStack extends cdk.NestedStack {
         environmentVariables: {
           APP_NAME: props.appName,
           TABLE_NAME: props.ddbTable.tableName,
-          CONTAINER_HTTP_PORT: props.containerHttpPort,
         },
         imagePathRelativeToRoot: "src/containers/go-web-server/",
         enableAutoScaling: false,
