@@ -10,6 +10,7 @@ export interface BackendStackProps extends cdk.NestedStackProps {
   ddbTable: ITable;
   vpc: IVpc;
   domainName: string;
+  containerHttpPort: number;
   apiGwApiKey?: string;
 }
 export class BackendStack extends cdk.NestedStack {
@@ -114,6 +115,7 @@ export class BackendStack extends cdk.NestedStack {
         imagePathRelativeToRoot: "src/containers/go-web-server/",
         enableAutoScaling: false,
         assignPublicIp: true,
+        httpPort: props.containerHttpPort,
       }
     );
   }

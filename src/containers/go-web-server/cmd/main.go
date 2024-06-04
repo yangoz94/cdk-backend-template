@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"web-server/internal/controller"
 
 	"github.com/go-chi/chi"
@@ -10,6 +11,8 @@ import (
 )
 
 func main() {
+	CONTAINER_HTTP_PORT := os.Getenv("CONTAINER_HTTP_PORT")
+
 	r := chi.NewRouter()
 
 	c := controller.New()
@@ -20,6 +23,6 @@ func main() {
 		w.Write([]byte("OK"))
 	})
 
-	fmt.Println("Server is running on port 8080")
-	http.ListenAndServe(":8080", r)
+	fmt.Println("Server is running on port:", CONTAINER_HTTP_PORT)
+	http.ListenAndServe(":"+CONTAINER_HTTP_PORT, r)
 }

@@ -7,6 +7,7 @@ import { BackendStack } from "./nested-stacks/BackendStack";
 export interface MainStackProps extends StackProps {
   appName: string;
   domainName: string;
+  containerHttpPort: number;
   apiGatewayApiKey?: string;
 }
 
@@ -33,6 +34,7 @@ export class MainStack extends cdk.Stack {
         ddbTable: infrastructureStack.table,
         vpc: infrastructureStack.vpc,
         domainName: props.domainName,
+        containerHttpPort: props.containerHttpPort,
       }
     );
     /* Ensure that the BackendStack is created after the InfrastructureStack */

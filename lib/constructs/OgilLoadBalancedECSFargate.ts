@@ -40,6 +40,7 @@ export interface OgilLoadBalancedECSFargateProps {
   assignPublicIp?: boolean;
   enableAutoScaling?: boolean;
   ddbTables?: ITable[];
+  httpPort: number;
 }
 
 export class OgilLoadBalancedECSFargate extends Construct {
@@ -141,7 +142,7 @@ export class OgilLoadBalancedECSFargate extends Construct {
         logging: logDriver,
         portMappings: [
           {
-            containerPort: 80,
+            containerPort: parseInt(props.httpPort.toString()),
           },
         ],
         healthCheck: {
@@ -154,7 +155,10 @@ export class OgilLoadBalancedECSFargate extends Construct {
           retries: 2,
           startPeriod: Duration.seconds(10),
         },
-        environment: props.environmentVariables,
+        environment: {
+          PORT: props.httpPort.toString(),
+          ...props.environmentVariables,
+        },
       }
     );
 
@@ -186,7 +190,7 @@ export class OgilLoadBalancedECSFargate extends Construct {
     /* Configure the Target Group Health Check for the Load Balancer */
     this.service.targetGroup.configureHealthCheck({
       path: "/health",
-      port: "80",
+      port: `${props.httpPort}`,
       interval: Duration.seconds(30),
     });
 
