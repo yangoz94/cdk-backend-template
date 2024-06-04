@@ -149,7 +149,7 @@ export class OgilLoadBalancedECSFargate extends Construct {
         healthCheck: {
           command: [
             "CMD-SHELL",
-            `curl -f http://localhost:80/health || exit 1`,
+            `curl -f http://localhost:${CONTAINER_HTTP_PORT}/health || exit 1`,
           ],
           interval: Duration.seconds(30),
           timeout: Duration.seconds(5),
