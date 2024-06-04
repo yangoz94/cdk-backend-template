@@ -40,7 +40,7 @@ export interface OgilLoadBalancedECSFargateProps {
   assignPublicIp?: boolean;
   enableAutoScaling?: boolean;
   ddbTables?: ITable[];
-  httpPort: number;
+  containerHttpPort: string;
 }
 
 export class OgilLoadBalancedECSFargate extends Construct {
@@ -57,6 +57,7 @@ export class OgilLoadBalancedECSFargate extends Construct {
     super(scope, id);
 
     const DOMAIN = `${props.subdomain}.${props.domainName}`;
+    const CONTAINER_HTTP_PORT = parseInt(props.containerHttpPort);
 
     /* Look up the existing Hosted Zone (Domain is on Google Domains NOT on Route53. Route 53 hosted zone was created manually and DNS records were added to Google Domains) */
     const hostedZone = HostedZone.fromLookup(
@@ -142,7 +143,7 @@ export class OgilLoadBalancedECSFargate extends Construct {
         logging: logDriver,
         portMappings: [
           {
-            containerPort: parseInt(props.httpPort.toString()),
+            containerPort: CONTAINER_HTTP_PORT,
           },
         ],
         healthCheck: {
@@ -155,10 +156,7 @@ export class OgilLoadBalancedECSFargate extends Construct {
           retries: 2,
           startPeriod: Duration.seconds(10),
         },
-        environment: {
-          PORT: props.httpPort.toString(),
-          ...props.environmentVariables,
-        },
+        environment: props.environmentVariables,
       }
     );
 
@@ -190,7 +188,7 @@ export class OgilLoadBalancedECSFargate extends Construct {
     /* Configure the Target Group Health Check for the Load Balancer */
     this.service.targetGroup.configureHealthCheck({
       path: "/health",
-      port: `${props.httpPort}`,
+      port: `${CONTAINER_HTTP_PORT}`,
       interval: Duration.seconds(30),
     });
 

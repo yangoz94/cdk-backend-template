@@ -13,5 +13,5 @@ const mainStack = new MainStack(app, `${process.env.APP_NAME}MainStack`, {
   },
   appName: process.env.APP_NAME || "", // e.g "HelloworldCDK",
   domainName: process.env.DOMAIN_NAME || "", // e.g. "example.com". Make sure you have a hosted zone in Route 53. Otherwise, you will get an error during cdk synth and/or cdk deploy
-  containerHttpPort: parseInt(process.env.CONTAINER_HTTP_PORT || "8080"), // e.g. 8080
+  containerHttpPort: process.env.CONTAINER_HTTP_PORT || "8080"
 });

@@ -45,6 +45,8 @@ jobs:
           AWS_REGION: ${{ vars.AWS_REGION }}
           AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
           DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
+          CONTAINER_HTTP_PORT: ${{ vars.CONTAINER_HTTP_PORT }}
+          
   deploy_main:
     name: deploy_main
     if: github.ref == 'refs/heads/main'
@@ -79,4 +81,5 @@ jobs:
           AWS_REGION: ${{ vars.AWS_REGION }}
           AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
           DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
+          CONTAINER_HTTP_PORT: ${{ vars.CONTAINER_HTTP_PORT }}
           

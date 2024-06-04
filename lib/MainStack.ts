@@ -7,7 +7,7 @@ import { BackendStack } from "./nested-stacks/BackendStack";
 export interface MainStackProps extends StackProps {
   appName: string;
   domainName: string;
-  containerHttpPort: number;
+  containerHttpPort: string;
   apiGatewayApiKey?: string;
 }
 
